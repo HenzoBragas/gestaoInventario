@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { api } from "@/lib/api";
+import { api, categoriesApi } from "@/lib/api";
 
 export interface InventoryItem {
   seq?: number;
@@ -8,7 +8,6 @@ export interface InventoryItem {
   model: string;
   category: string;
   quantity: number;
-  description: string;
   updatedAt: string;
 }
 
@@ -30,6 +29,18 @@ interface ProductRequest {
   stock: number;
 }
 
+export interface Category {
+  seq?: number;
+  name: string;
+  inactive?: number;
+}
+
+interface CategoryResponse {
+  seq: number;
+  name: string;
+  inactive: number;
+}
+
 export type ItemStatus = "Em Estoque" | "Estoque Baixo" | "Sem Estoque";
 
 export function getStatus(quantity: number): ItemStatus {
@@ -38,7 +49,7 @@ export function getStatus(quantity: number): ItemStatus {
   return "Em Estoque";
 }
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   "Eletrônicos",
   "Periféricos",
   "Componentes",
@@ -57,7 +68,6 @@ function toInventoryItem(product: ProductResponse): InventoryItem {
     model: product.model ?? "",
     category: product.category ?? "Outros",
     quantity: product.stock ?? 0,
-    description: "",
     updatedAt: product.changeDate ? new Date(product.changeDate).toISOString() : now(),
   };
 }
@@ -74,6 +84,42 @@ function toProductRequest(item: Partial<InventoryItem>): ProductRequest {
 
 export function useInventoryStore() {
   const [items, setItems] = useState<InventoryItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES.map(name => ({ name, inactive: 0 })));
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await categoriesApi.get<CategoryResponse[]>("");
+      // Filter only active categories (inactive = 0)
+      const activeCategories = response.data.filter(cat => cat.inactive === 0);
+      setCategories(activeCategories);
+    } catch (error) {
+      console.error("Erro ao buscar categorias:", error);
+      // Fallback to default categories if API fails
+      setCategories(DEFAULT_CATEGORIES.map((name) => ({ name, inactive: 0 })));
+    }
+  }, []);
+
+  const addCategory = useCallback(async (name: string) => {
+    try {
+      const response = await categoriesApi.post<CategoryResponse>("", { name, inactive: 0 });
+      await fetchCategories();
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        throw new Error("Categoria já existe");
+      }
+      throw error;
+    }
+  }, [fetchCategories]);
+
+  const deleteCategory = useCallback(async (seq: number) => {
+    try {
+      await categoriesApi.delete(`/${seq}`);
+      await fetchCategories();
+    } catch (error) {
+      throw error;
+    }
+  }, [fetchCategories]);
 
   const fetchItems = useCallback(async () => {
     const response = await api.get<ProductResponse[]>("");
@@ -81,8 +127,9 @@ export function useInventoryStore() {
   }, []);
 
   useEffect(() => {
+    void fetchCategories();
     void fetchItems();
-  }, [fetchItems]);
+  }, [fetchCategories, fetchItems]);
 
   const addItem = useCallback(async (item: Omit<InventoryItem, "updatedAt">) => {
     await api.post("", toProductRequest(item));
@@ -124,13 +171,11 @@ export function useInventoryStore() {
 
   const stats = useMemo(() => {
     const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
-    const categories = new Set(items.map((i) => i.category)).size;
+    const categoriesCount = categories.length;
     const lowStockAlerts = items.filter((i) => i.quantity > 0 && i.quantity <= 5).length;
     const outOfStock = items.filter((i) => i.quantity === 0).length;
-    return { totalItems, categories, lowStockAlerts, outOfStock };
-  }, [items]);
+    return { totalItems, categories: categoriesCount, lowStockAlerts, outOfStock };
+  }, [items, categories]);
 
-  return { items, addItem, updateItem, deleteItem, adjustQuantity, stats, CATEGORIES };
+  return { items, addItem, updateItem, deleteItem, adjustQuantity, stats, categories, addCategory, deleteCategory };
 }
-
-export { CATEGORIES };

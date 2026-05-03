@@ -3,7 +3,6 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose,
 } from "@/components/ui/dialog";
@@ -11,15 +10,15 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import type { InventoryItem } from "@/lib/inventory-store";
-import { CATEGORIES } from "@/lib/inventory-store";
 
 interface AddItemDialogProps {
   onAdd: (item: Omit<InventoryItem, "updatedAt">) => void;
+  categories: string[];
 }
 
-const empty = { id: "", name: "", model: "", category: "", quantity: 0, description: "" };
+const empty = { id: "", name: "", model: "", category: "", quantity: 0 };
 
-export function AddItemDialog({ onAdd }: AddItemDialogProps) {
+export function AddItemDialog({ onAdd, categories }: AddItemDialogProps) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
 
@@ -60,7 +59,7 @@ export function AddItemDialog({ onAdd }: AddItemDialogProps) {
               <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                 <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -68,10 +67,6 @@ export function AddItemDialog({ onAdd }: AddItemDialogProps) {
           <div className="space-y-2">
             <Label>Quantidade Inicial</Label>
             <Input type="number" min={0} value={form.quantity} onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })} />
-          </div>
-          <div className="space-y-2">
-            <Label>Descrição</Label>
-            <Textarea placeholder="Descrição do produto" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
         </div>
         <DialogFooter>

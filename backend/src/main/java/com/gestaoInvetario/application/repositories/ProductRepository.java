@@ -9,6 +9,8 @@ public interface ProductRepository  extends JpaRepository<Product, Integer> {
     boolean existsByName(String name);
 
     boolean existsByCode(String code);
+    
+    long countByCategory_Seq(Integer categorySeq);
 }
 
 

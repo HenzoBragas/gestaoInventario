@@ -35,7 +35,7 @@ import {
 
 // Tipos e funções do inventário
 import type { InventoryItem } from "@/lib/inventory-store";
-import { getStatus, CATEGORIES } from "@/lib/inventory-store";
+import { getStatus } from "@/lib/inventory-store";
 
 // Dialogs de ações
 import { EditItemDialog } from "./EditItemDialog";
@@ -45,6 +45,7 @@ import { StockMovementDialog } from "./StockMovementDialog";
 // Props recebidas pelo componente
 interface InventoryTableProps {
   items: InventoryItem[];
+  categories: string[];
   onUpdate: (id: string, updates: Partial<InventoryItem>) => void | Promise<void>;
   onDelete: (id: string) => void | Promise<void>;
   onAdjust: (id: string, delta: number) => void | Promise<void>;
@@ -54,19 +55,15 @@ interface InventoryTableProps {
 function StatusBadge({ quantity }: { quantity: number }) {
   const status = getStatus(quantity);
 
-  // Define o estilo do badge baseado no status
-  const variant =
-    status === "Em Estoque"
-      ? "secondary"
-      : status === "Estoque Baixo"
-      ? "outline"
-      : "destructive";
+  if (status === "Em Estoque") {
+    return <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">{status}</Badge>;
+  }
 
-  return <Badge variant={variant}>{status}</Badge>;
+  return <Badge className="bg-red-600 text-white hover:bg-red-600">{status}</Badge>;
 }
 
 // Componente principal da tabela
-export function InventoryTable({ items, onUpdate, onDelete, onAdjust }: InventoryTableProps) {
+export function InventoryTable({ items, categories, onUpdate, onDelete, onAdjust }: InventoryTableProps) {
 
   // Estado de ordenação
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -165,7 +162,7 @@ export function InventoryTable({ items, onUpdate, onDelete, onAdjust }: Inventor
         return (
           <div className="flex items-center gap-1">
             <StockMovementDialog item={item} onAdjust={onAdjust} />
-            <EditItemDialog item={item} onUpdate={onUpdate} />
+            <EditItemDialog item={item} categories={categories} onUpdate={onUpdate} />
             <DeleteItemDialog
               itemName={item.name}
               onDelete={() => onDelete(item.id)}
@@ -202,7 +199,6 @@ export function InventoryTable({ items, onUpdate, onDelete, onAdjust }: Inventor
       Categoria: i.category,
       Quantidade: i.quantity,
       Status: getStatus(i.quantity),
-      Descrição: i.description,
       Atualizado: new Date(i.updatedAt).toLocaleDateString("pt-BR"),
     }));
 
@@ -247,7 +243,7 @@ export function InventoryTable({ items, onUpdate, onDelete, onAdjust }: Inventor
             <SelectContent>
               <SelectItem value="all">Todas as Categorias</SelectItem>
 
-              {CATEGORIES.map((c) => (
+              {categories.map((c) => (
                 <SelectItem key={c} value={c}>{c}</SelectItem>
               ))}
             </SelectContent>

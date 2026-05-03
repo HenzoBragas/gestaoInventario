@@ -4,6 +4,7 @@ import { useInventoryStore } from "@/lib/inventory-store";
 import { StatsCards } from "@/components/inventory/StatsCards";
 import { InventoryTable } from "@/components/inventory/InventoryTable";
 import { AddItemDialog } from "@/components/inventory/AddItemDialog";
+import { ManageCategoriesDialog } from "@/components/inventory/ManageCategoriesDialog";
 
 export const Route = createFileRoute("/")({
   component: InventoryDashboard,
@@ -16,7 +17,8 @@ export const Route = createFileRoute("/")({
 });
 
 function InventoryDashboard() {
-  const { items, addItem, updateItem, deleteItem, adjustQuantity, stats } = useInventoryStore();
+  const { items, addItem, updateItem, deleteItem, adjustQuantity, stats, categories, addCategory, deleteCategory } = useInventoryStore();
+  const categoryNames = categories.map((category) => category.name);
 
   return (
     <div className="min-h-screen bg-background">
@@ -31,7 +33,14 @@ function InventoryDashboard() {
               <p className="text-xs text-muted-foreground">Controle completo do seu estoque</p>
             </div>
           </div>
-          <AddItemDialog onAdd={addItem} />
+          <div className="flex gap-2">
+            <ManageCategoriesDialog
+              categories={categories}
+              onAdd={addCategory}
+              onDelete={deleteCategory}
+            />
+            <AddItemDialog onAdd={addItem} categories={categoryNames} />
+          </div>
         </div>
       </header>
 
@@ -39,6 +48,7 @@ function InventoryDashboard() {
         <StatsCards {...stats} />
         <InventoryTable
           items={items}
+          categories={categoryNames}
           onUpdate={updateItem}
           onDelete={deleteItem}
           onAdjust={adjustQuantity}
