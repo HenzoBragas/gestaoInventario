@@ -49,15 +49,6 @@ export function getStatus(quantity: number): ItemStatus {
   return "Em Estoque";
 }
 
-const DEFAULT_CATEGORIES = [
-  "Eletrônicos",
-  "Periféricos",
-  "Componentes",
-  "Cabos & Conectores",
-  "Acessórios",
-  "Outros",
-];
-
 const now = () => new Date().toISOString();
 
 function toInventoryItem(product: ProductResponse): InventoryItem {
@@ -84,7 +75,7 @@ function toProductRequest(item: Partial<InventoryItem>): ProductRequest {
 
 export function useInventoryStore() {
   const [items, setItems] = useState<InventoryItem[]>([]);
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES.map(name => ({ name, inactive: 0 })));
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -94,8 +85,7 @@ export function useInventoryStore() {
       setCategories(activeCategories);
     } catch (error) {
       console.error("Erro ao buscar categorias:", error);
-      // Fallback to default categories if API fails
-      setCategories(DEFAULT_CATEGORIES.map((name) => ({ name, inactive: 0 })));
+      setCategories([]);
     }
   }, []);
 
