@@ -59,7 +59,8 @@ async function serveClientAsset(request, response) {
 }
 
 async function proxyApiRequest(request, response) {
-  const targetUrl = new URL(request.url ?? "/", backendBaseUrl);
+  const strippedPath = (request.url ?? "/").replace(/^\/api/, "");
+  const targetUrl = new URL(strippedPath, backendBaseUrl);
   const headers = new Headers();
 
   for (const [name, value] of Object.entries(request.headers)) {
