@@ -59,6 +59,10 @@ function StatusBadge({ quantity }: { quantity: number }) {
     return <Badge className="bg-emerald-600 text-white hover:bg-emerald-600">{status}</Badge>;
   }
 
+  if (status === "Estoque Baixo") {
+    return <Badge className="bg-orange-500 text-white hover:bg-orange-500">{status}</Badge>;
+  }
+
   return <Badge className="bg-red-600 text-white hover:bg-red-600">{status}</Badge>;
 }
 

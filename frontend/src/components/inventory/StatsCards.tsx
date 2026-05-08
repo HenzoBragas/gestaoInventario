@@ -11,7 +11,7 @@ interface StatsCardsProps {
 const cards = [
   { key: "totalItems", label: "Total de Itens", icon: Package, color: "text-primary" },
   { key: "categories", label: "Categorias Ativas", icon: Layers, color: "text-success" },
-  { key: "lowStockAlerts", label: "Estoque Baixo", icon: AlertTriangle, color: "text-warning-foreground" },
+  { key: "lowStockAlerts", label: "Estoque Baixo", icon: AlertTriangle, color: "text-orange-500" },
   { key: "outOfStock", label: "Sem Estoque", icon: XCircle, color: "text-destructive" },
 ] as const;
 
