@@ -25,12 +25,12 @@ CREATE TABLE `categoria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO `categoria` (`SEQ`, `Nome`, `Inativo`) VALUES
-(1, 'Eletrônicos', 0),
-(2, 'Periféricos', 0),
-(3, 'Móveis', 0),
+(1, 'Eletronicos', 0),
+(2, 'Perifericos', 0),
+(3, 'Moveis', 0),
 (4, 'Armazenamento', 0),
 (5, 'Redes', 0),
-(6, 'Áudio', 0),
+(6, 'Audio', 0),
 (7, 'Hardware', 0),
 (8, 'Wearables', 0),
 (9, 'Games', 0),
@@ -47,23 +47,21 @@ CREATE TABLE `funcionario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `produto` (
-  `SEQ` int NOT NULL,
-  `Id` varchar(20) NOT NULL,
-  `Nome` varchar(30) NOT NULL,
-  `Modelo` varchar(30) NOT NULL,
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `SEQ` varchar(20) NOT NULL,
+  `Nome` varchar(255) NOT NULL,
+  `Modelo` varchar(255) NOT NULL,
   `Categoria` int NOT NULL DEFAULT '1',
   `Qtd` int NOT NULL DEFAULT '0',
   `Dta_atualizacao` date NOT NULL DEFAULT (curdate()),
-  `Funcionario` int DEFAULT NULL
+  `Funcionario` int DEFAULT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `produto` (`SEQ`, `Id`, `Nome`, `Modelo`, `Categoria`, `Qtd`, `Dta_atualizacao`, `Funcionario`) VALUES
-(3, '3', 'Teclado Redragon', 'K552', 2, 30, '2026-04-13', NULL),
-(4, '4', 'Monitor LG', '24MK430H', 1, 20, '2026-04-13', NULL);
 
 DELIMITER $$
 CREATE TRIGGER `trg_Audita_Produto_Insert` AFTER INSERT ON `produto` FOR EACH ROW BEGIN
-    INSERT INTO Auditoria (
+  INSERT INTO auditoria (
         Tabela_alterada,
         Campo_alterado,
         Valor_anterior,
@@ -94,7 +92,6 @@ ALTER TABLE `funcionario`
   ADD PRIMARY KEY (`SEQ`);
 
 ALTER TABLE `produto`
-  ADD PRIMARY KEY (`SEQ`),
   ADD KEY `FK_Produto_Categoria` (`Categoria`),
   ADD KEY `FK_Produto_Funcionario` (`Funcionario`);
 
@@ -108,7 +105,7 @@ ALTER TABLE `funcionario`
   MODIFY `SEQ` int NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `produto`
-  MODIFY `SEQ` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `Id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `produto`
   ADD CONSTRAINT `FK_Produto_Categoria` FOREIGN KEY (`Categoria`) REFERENCES `categoria` (`SEQ`),

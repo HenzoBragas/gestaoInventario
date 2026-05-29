@@ -19,10 +19,10 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SEQ")
-    private Integer seq;
+    @Column(name = "Id")
+    private Integer id;
 
-    @Column(name = "Id", nullable = false, length = 20)
+    @Column(name = "SEQ", nullable = false, length = 20)
     private String code;
 
     @Column(name = "Nome", nullable = false, length = 30)

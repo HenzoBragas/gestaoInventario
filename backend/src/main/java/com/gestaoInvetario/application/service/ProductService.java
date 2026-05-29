@@ -82,7 +82,7 @@ public class ProductService {
 
     private ProductResponseDTO toDTO(Product product) {
         return new ProductResponseDTO(
-                product.getSeq(),
+                product.getId(),
                 product.getCode(),
                 product.getName(),
                 product.getModel(),
