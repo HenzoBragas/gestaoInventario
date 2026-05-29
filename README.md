@@ -1,162 +1,274 @@
-# Gestão de Inventário
+# 📦 Sistema de Gestão de Inventário
 
-Sistema de gestão de estoque com backend em Spring Boot, frontend em React + TanStack Start e banco MySQL.
+Um sistema completo de controle de inventario desenvolvido com **Spring Boot**, **React** e **MySQL**, containerizado com Docker para fácil deployment e desenvolvimento.
 
-## Visão Geral
+---
 
-O projeto oferece cadastro de produtos, categorias, movimentação de estoque, exportação para Excel e um painel com indicadores de estoque.
+## 🎯 Visão Geral
 
-## Requisitos
+O **Sistema de Gestão de Inventário** centraliza o cadastro de produtos e categorias, oferecendo:
 
-- Java 17
-- Maven 3.9+ ou o wrapper do projeto
-- Node.js 22+
-- Docker Engine ou Docker Desktop
-- Docker Compose v2
+- ✅ Controle total de estoque em tempo real
+- ✅ Painel com indicadores e estatísticas
+- ✅ Interface intuitiva com dialogs para CRUD
+- ✅ Banco de dados relacional com integridade referencial
+- ✅ Arquitetura moderna e escalável
 
-## Estrutura
+**Objetivo:** Eliminar a necessidade de planilhas ou scripts manuais, fornecendo uma plataforma centralizada para gerenciar produtos e seus estoques.
 
-
-```text
-project/
-├── frontend/
+## 📦 Estrutura do Projeto
+```
+gestaoInventario/
+│
 ├── backend/
+│   ├── src/main/java/com/gestaoInvetario/
+│   │   ├── application/
+│   │   │   ├── controllers/
+│   │   │   │   └── ProductController.java
+│   │   │   ├── service/
+│   │   │   │   └── ProductService.java
+│   │   │   ├── model/
+│   │   │   │   ├── Product.java       
+│   │   │   │   └── Category.java
+│   │   │   ├── repositories/
+│   │   │   │   └── ProductRepository.java
+│   │   │   └── dtos/
+│   │   │       ├── ProductRequestDto.java
+│   │   │       └── ProductResponseDto.java
+│   │   └── application.properties
+│   └── pom.xml
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   └── App.tsx
+│   └── package.json
+│
+├── database/
+│   └── init/
+│       ├── 01-GestaoInventario.sql    # Criação de tabelas
+│       └── 02-script_inventario.sql   # Dados iniciais
+│
 ├── docker-compose.yml
-└── .env
+└── README.md
+
+```
+---
+
+## 🏗️ Arquitetura do Sistema
+```
+Fluxo Principal
+┌─────────────────────────────────────────────────────────┐
+│                   CLIENTE (Browser)                     │
+│              React 19 + TanStack Router                 │
+│               http://localhost:3000                     │     │                                                         │
+└───────────────────────┬─────────────────────────────────┘
+                        │
+                        │ HTTP/REST
+                        │ Axios
+                        ▼
+┌─────────────────────────────────────────────────────────┐
+│              BACKEND - Spring Boot 3.4.5                │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Controller Layer (ProductController)              │ │
+│  │  Endpoints: GET, POST, PUT, DELETE                 │ │
+│  └────────────────────────────────────────────────────┘ │
+│                        ▲                                │
+│                        │                                │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Service Layer (ProductService)                    │ │
+│  │  - Lógica de negócio                               │ │
+│  │  - Validações                                      │ │
+│  │  - Conversão de DTOs                               │ │
+│  └────────────────────────────────────────────────────┘ │
+│                        ▲                                │
+│                        │                                │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Repository Layer (ProductRepository)              │ │
+│  │  - Spring Data JPA                                 │ │
+│  │  - Operações CRUD                                  │ │
+│  └────────────────────────────────────────────────────┘ │
+│                         ▲                               │
+│               http://localhost:8080                     │
+└───────────────────────┬─────────────────────────────────┘
+                        │
+                        │ SQL/JDBC
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────┐
+│         DATABASE - MySQL 8.0                            │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Tabela: produto                                   │ │
+│  │  Tabela: categoria                                 │ │
+│  │  Relacionamento: produto FK -> categoria           │ │
+│  └────────────────────────────────────────────────────┘ │
+│  localhost:3306                                         │
+└─────────────────────────────────────────────────────────┘
 ```
 
-## Execução Local
+## 📋 Modelo de Dados - Entidade Product
 
-### 1. Subir o backend
+### Classe Product (Java)
 
-```powershell
-cd backend
-.\mvnw spring-boot:run
+```java
+@Entity
+@Table(name = "produto")
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;                    // PK - Identificador único
+    
+    @Column(length = 20, nullable = false)
+    private String code;                   // Código/SKU do produto
+    
+    @Column(length = 30, nullable = false)
+    private String name;                   // Nome do produto
+    
+    @Column(length = 30, nullable = false)
+    private String model;                  // Modelo/Variação
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Categoria")        // FK para tabela categoria
+    private Category category;              // Relacionamento com Categoria
+    
+    @Column(nullable = false)
+    private Integer stock;                 // Quantidade em estoque
+    
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Date updatedAt;                // Data última atualização
+}
 ```
 
-No Linux ou macOS:
+### 🔍 Explicação dos Campos
+
+| Campo | Tipo | Restrição | Descrição |
+|-------|------|-----------|-----------|
+| **id** | Integer | PK, AI | Identificador único do produto (auto-incrementado) |
+| **code** | String(20) | NOT NULL, UNIQUE | Código/SKU único para identificar o produto rapidamente |
+| **name** | String(30) | NOT NULL | Nome descritivo do produto |
+| **model** | String(30) | NOT NULL | Modelo ou variação do produto |
+| **category** | Category | FK, NOT NULL | Referência à categoria (relacionamento ManyToOne) |
+| **stock** | Integer | NOT NULL | Quantidade disponível em estoque |
+| **updatedAt** | Date | NOT NULL | Timestamp automático da última atualização |
+
+### 📌 Relacionamentos
+
+#### ManyToOne: Produto → Categoria
+
+```java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "Categoria", nullable = false)
+private Category category;
+```
+
+**O que significa:**
+- **Muitos** produtos podem pertencer a **Uma** categoria
+- `@JoinColumn` cria a coluna `Categoria` como chave estrangeira
+- `FetchType.LAZY` carrega a categoria apenas quando acessada (melhor performance)
+- `nullable = false` garante que todo produto tenha uma categoria
+
+**Exemplo de dados:**
+
+| id | code | name | model | category_id | stock | updatedAt |
+|:--:|:----:|:----:|:-----:|:-----------:|:-----:|:---------:|
+| 1 | SKU001 | Mouse | Óptico | 2 | 50 | 2025-05-28 |
+| 2 | SKU002 | Teclado | Mecânico | 2 | 30 | 2025-05-28 |
+| 3 | SKU003 | Monitor | LED | 3 | 15 | 2025-05-28 |
+
+
+
+
+
+## 📊 Funcionalidades
+
+### Dashboard
+- Total de produtos cadastrados
+- Total de categorias
+- Produtos com baixo estoque
+- Últimas atualizações
+
+### Produtos
+- Criar novo produto
+- Editar nome, categoria, modelo e estoque
+- Deletar produto
+- Listar todos com filtros
+
+### Categorias
+- Criar categoria
+- Editar nome
+- Deletar categoria
+
+# 🚀 Usando a aplicação
+
+### Primeira vez
 
 ```bash
-cd backend
-./mvnw spring-boot:run
-```
+# 1. Abrir terminal na pasta do projeto
+cd gestaoInventario
 
-O backend sobe em `http://localhost:8080`.
-
-### 2. Subir o frontend
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-O frontend sobe em `http://localhost:3000` e usa proxy para a API local.
-
-## Execução com Docker
-
-### 1. Build e subida
-
-Na raiz do projeto:
-
-```powershell
-docker compose up --build
-```
-
-Se quiser subir em segundo plano:
-
-```powershell
+# 2. Subir tudo
 docker compose up -d --build
+
+# 3 Aguarda o container ser criado
+
+#4 Verificar se container foi criado
+docker ps
+
+# 4.1 Se for criado e inicializado so prosseguir para proximo passo e houve algum erro apague o container e repetida o processo 
+# 5. Abrir navegador
+http://localhost:3000
+
 ```
 
-### 2. Verificar os serviços
+### Próximas vezes
 
-```powershell
-docker compose ps
-```
+```bash
+# 1. Subir
+docker compose up -d
 
-### 3. Acessar a aplicação
+# 2. Usar
+http://localhost:3000
 
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:8080`
-- MySQL: `localhost:3306`
-
-### 4. Parar a stack
-
-```powershell
+# 3. Parar
 docker compose down
 ```
 
-Para remover também os dados persistidos do MySQL:
 
-```powershell
-docker compose down -v
-```
 
-### 5. Ver logs
+## 🛠️ Stack Tecnológico
 
-```powershell
-docker compose logs -f frontend
-docker compose logs -f backend
-docker compose logs -f mysql
-```
+### **Backend**
+- **Java 17** - Linguagem principal
+- **Spring Boot 3.4.5** - Framework web
+- **Spring Data JPA** - ORM e persistência
+- **Lombok** - Reduz boilerplate (getters, setters, construtores)
+- **Hibernate** - Provider JPA
+- **Maven** - Gerenciador de dependências
 
-## Como rodar em outro computador
+### **Frontend**
+- **React 19** - Framework UI
+- **TypeScript** - Tipagem estática
+- **TanStack Router** - Roteamento client-side
+- **TanStack Table** - Tabelas complexas
+- **Tailwind CSS** - Estilização
+- **React Hook Form** - Formulários
+- **Zod** - Validação de schema
+- **Axios** - Cliente HTTP
+- **Vite** - Build tool
 
-1. Instale apenas Docker e Docker Compose no outro computador.
-2. Faça clone do repositório pelo GitHub.
-3. Garanta que o arquivo `.env` esteja junto com `docker-compose.yml`.
-4. Execute `docker compose up --build`.
-5. Acesse `http://localhost:3000` no navegador.
-Se quiser subir apenas o MySQL para testes, use `docker compose -f mysql-compose.yml up -d`.
+### **Banco de Dados**
+- **MySQL 8.0** - SGBD relacional
+- **InnoDB** - Engine com suporte a transações
 
-Não é necessário instalar Java, Node.js ou MySQL localmente no outro computador, porque tudo sobe dentro dos containers.
+### **DevOps**
+- **Docker** - Containerização
+- **Docker Compose** - Orquestração local
 
-## Como compartilhar pelo GitHub
+---
 
-1. Crie um repositório no GitHub.
-2. Suba o código com `git add .`, `git commit -m "docker full stack"` e `git push`.
-3. No README, mantenha os arquivos Docker e o `.env` documentados.
-4. Se quiser, adicione um `.env.example` sem senhas para orientar quem for clonar.
 
-## Variáveis de Ambiente
-
-### Backend
-
-- `SPRING_DATASOURCE_URL`
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
-- `SERVER_PORT`
-
-### Frontend
-
-- `VITE_API_URL`
-
-O frontend recebe `VITE_API_URL=/api/products` no build. Em runtime, o servidor Node encaminha `/api` para o backend pelo nome do container.
-
-## Banco de Dados
-
-O MySQL usa:
-
-- banco: `GestaoInventario`
-- usuário: `root`
-- senha: `123456`
-
-As tabelas e dados iniciais vêm do script SQL incluído no repositório.
-
-## API
-
-- `GET /products`
-- `POST /products`
-- `PUT /products/{id}`
-- `DELETE /products/{id}`
-- `GET /categories`
-- `POST /categories`
-- `PUT /categories/{id}`
-- `DELETE /categories/{id}`
-
-## Observações
-
-- O frontend usa categorias vindas do banco de dados.
-- O backend se conecta ao MySQL pelo nome do serviço `mysql`.
-- O volume `mysql_data` garante persistência dos dados.
+---
