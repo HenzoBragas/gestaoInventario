@@ -270,5 +270,10 @@ docker compose down
 
 ---
 
-
----
+### 👥 **Colaboradores**
+- Bruno Araujo 
+- Giovanny Lino
+- Guilherme Carmo
+- Henrique Biciato
+- Henzo Bragas
+- Kaue Righetti
