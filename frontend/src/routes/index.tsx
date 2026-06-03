@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Package } from "lucide-react";
+import { Package, LogOut, Loader2 } from "lucide-react";
 import { useInventoryStore } from "@/lib/inventory-store";
+import { useAuth } from "@/lib/auth-provider";
 import { StatsCards } from "@/components/inventory/StatsCards";
-import { InventoryTable } from "@/components/inventory/InventoryTable";
+import { InventoryViews } from "@/components/inventory/InventoryViews";
 import { AddItemDialog } from "@/components/inventory/AddItemDialog";
 import { ManageCategoriesDialog } from "@/components/inventory/ManageCategoriesDialog";
+import { LoginScreen } from "@/components/LoginScreen";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
-  component: InventoryDashboard,
+  component: InventoryPage,
   head: () => ({
     meta: [
       { title: "Gestão de Inventário" },
@@ -16,14 +20,44 @@ export const Route = createFileRoute("/")({
   }),
 });
 
+// Decide entre carregando / tela de login / painel, conforme a autenticação.
+function InventoryPage() {
+  const { isAuthenticated, isReady } = useAuth();
+
+  if (!isReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
+
+  return <InventoryDashboard />;
+}
+
 function InventoryDashboard() {
-  const { items, addItem, updateItem, deleteItem, adjustQuantity, stats, categories, addCategory, deleteCategory } = useInventoryStore();
+  const { logout } = useAuth();
+  const {
+    items,
+    addItem,
+    updateItem,
+    deleteItem,
+    adjustQuantity,
+    stats,
+    categories,
+    addCategory,
+    deleteCategory,
+  } = useInventoryStore();
   const categoryNames = categories.map((category) => category.name);
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-primary p-2">
               <Package className="h-5 w-5 text-primary-foreground" />
@@ -33,20 +67,24 @@ function InventoryDashboard() {
               <p className="text-xs text-muted-foreground">Controle completo do seu estoque</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <ManageCategoriesDialog
               categories={categories}
               onAdd={addCategory}
               onDelete={deleteCategory}
             />
             <AddItemDialog onAdd={addItem} categories={categoryNames} />
+            <ThemeToggle />
+            <Button variant="outline" size="icon" onClick={logout} aria-label="Sair">
+              <LogOut />
+            </Button>
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
         <StatsCards {...stats} />
-        <InventoryTable
+        <InventoryViews
           items={items}
           categories={categoryNames}
           onUpdate={updateItem}

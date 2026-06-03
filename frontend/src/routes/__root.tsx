@@ -1,6 +1,13 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { AuthProvider } from "@/lib/auth-provider";
+import { ThemeProvider } from "@/lib/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+
+// Script executado antes da pintura para aplicar o tema correto (claro/escuro/horário)
+// e evitar o "flash" de tema errado na carga inicial. Espelha a lógica do ThemeProvider.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('inventario:theme')||'system';var d;if(t==='system'){var h=new Date().getHours();d=(h<6||h>=18);}else{d=t==='dark';}if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 function NotFoundComponent() {
   return (
@@ -54,8 +61,10 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
+        {/* Aplica o tema antes da pintura para evitar flash (FOUC de tema). */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
       </head>
       <body>
@@ -67,5 +76,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <AuthProvider>
+      <ThemeProvider>
+        <Outlet />
+        <Toaster />
+      </ThemeProvider>
+    </AuthProvider>
+  );
 }
