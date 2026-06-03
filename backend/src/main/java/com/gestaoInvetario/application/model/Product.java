@@ -25,10 +25,10 @@ public class Product {
     @Column(name = "SEQ", nullable = false, length = 20)
     private String code;
 
-    @Column(name = "Nome", nullable = false, length = 30)
+    @Column(name = "Nome", nullable = false, length = 150)
     private String name;
 
-    @Column(name = "Modelo", nullable = false, length = 30)
+    @Column(name = "Modelo", nullable = false, length = 60)
     private String model;
 
     @ManyToOne(fetch = FetchType.LAZY)
