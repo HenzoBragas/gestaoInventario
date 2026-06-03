@@ -8,7 +8,8 @@ const appModule = await import("./dist/server/index.js");
 const appServer = appModule.default ?? appModule;
 
 const port = Number(process.env.PORT ?? 3000);
-const backendBaseUrl = process.env.BACKEND_URL ?? "http://backend:8080";
+const rawBackendUrl = process.env.BACKEND_URL ?? "http://backend:8080";
+const backendBaseUrl = rawBackendUrl.startsWith("http") ? rawBackendUrl : `https://${rawBackendUrl}`;
 const clientRoot = fileURLToPath(new URL("./dist/client/", import.meta.url));
 
 const mimeTypes = {

@@ -1,0 +1,49 @@
+databases:
+  - name: gestao-inventario-db
+    plan: free
+    databaseName: gestao_inventario
+
+services:
+  - type: web
+    name: gestao-inventario-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /products
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: gestao-inventario-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: gestao-inventario-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: gestao-inventario-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: gestao-inventario-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: gestao-inventario-db
+          property: password
+
+  - type: web
+    name: gestao-inventario-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: gestao-inventario-backend
+          property: host
+      - key: PORT
+        value: 3000
