@@ -40,10 +40,10 @@ services:
     dockerContext: ./frontend
     plan: free
     envVars:
+      # URL externa completa do backend. O `property: host` do Render retorna o
+      # host interno (sem protocolo), e o server.js o transforma em "https://<host>"
+      # invalido -> o proxy /api falha com 500. Usar a URL publica resolve isso.
       - key: BACKEND_URL
-        fromService:
-          type: web
-          name: gestao-inventario-backend
-          property: host
+        value: https://gestao-inventario-backend.onrender.com
       - key: PORT
         value: 3000
