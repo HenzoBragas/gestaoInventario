@@ -16,6 +16,16 @@ O **Sistema de Gestão de Inventário** centraliza o cadastro de produtos e cate
 
 **Objetivo:** Eliminar a necessidade de planilhas ou scripts manuais, fornecendo uma plataforma centralizada para gerenciar produtos e seus estoques.
 
+---
+## 🔓 ** Acesso ao provedor da aplicação - Render
+https://gestao-inventario-frontend.onrender.com/
+
+### Usuário e senha
+
+**Usuario: inventario**
+
+**Senha: inventario123**
+
 ## 📦 Estrutura do Projeto
 ```
 gestaoInventario/
