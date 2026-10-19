@@ -146,3 +146,337 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+/* ==========================================================================
+   Tela de login
+   Tokens e animacoes escopados em .login-root para nao afetar o painel.
+   ========================================================================== */
+@theme inline {
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+}
+
+.login-root {
+  /* Painel visual (sempre escuro, independente do tema) */
+  --login-ink: oklch(0.16 0.03 262);
+  --login-ink-raised: oklch(0.22 0.035 262 / 0.72);
+  --login-ink-line: oklch(0.82 0.03 250 / 0.12);
+  --login-ink-text: oklch(0.97 0.005 250);
+  --login-ink-muted: oklch(0.78 0.025 250);
+  --login-glow-blue: oklch(0.6 0.2 255);
+  --login-glow-teal: oklch(0.72 0.13 180);
+  --login-signal-ok: oklch(0.78 0.15 160);
+  --login-signal-low: oklch(0.8 0.15 75);
+
+  /* Movimento */
+  --login-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --login-enter-duration: 720ms;
+  --login-stagger: 70ms;
+
+  /* Superficies */
+  --login-card-radius: 1rem;
+  --login-card-shadow:
+    0 1px 0 0 oklch(1 0 0 / 0.06) inset,
+    0 24px 48px -16px oklch(0.05 0.03 262 / 0.6);
+}
+
+/* Entrada sequencial: cada elemento define --i (indice) via style. */
+.login-enter {
+  opacity: 0;
+  animation: login-rise var(--login-enter-duration) var(--login-ease) forwards;
+  animation-delay: calc(var(--i, 0) * var(--login-stagger) + 80ms);
+}
+
+@keyframes login-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Aurora de fundo: duas manchas de luz que derivam lentamente. */
+.login-aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.login-aurora--a {
+  inset: -20% auto auto -15%;
+  width: 70%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, var(--login-glow-blue), transparent 65%);
+  animation: login-drift-a 22s ease-in-out infinite alternate;
+}
+
+.login-aurora--b {
+  inset: auto -20% -25% auto;
+  width: 65%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, var(--login-glow-teal), transparent 65%);
+  opacity: 0.35;
+  animation: login-drift-b 26s ease-in-out infinite alternate;
+}
+
+@keyframes login-drift-a {
+  to {
+    transform: translate3d(12%, 10%, 0) scale(1.08);
+  }
+}
+
+@keyframes login-drift-b {
+  to {
+    transform: translate3d(-10%, -12%, 0) scale(1.12);
+  }
+}
+
+/* Grade de pontos com fade radial: da profundidade sem custo de pintura. */
+.login-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(oklch(0.9 0.02 250 / 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, black, transparent 75%);
+}
+
+/* Parallax: --px/--py (de -1 a 1) sao atualizadas via JS no movimento do cursor. */
+.login-parallax {
+  transform: translate3d(
+    calc(var(--px, 0) * var(--depth, 0) * 1px),
+    calc(var(--py, 0) * var(--depth, 0) * 1px),
+    0
+  );
+  transition: transform 600ms var(--login-ease);
+}
+
+.login-float {
+  animation: login-float 7s ease-in-out infinite alternate;
+  animation-delay: var(--float-delay, 0s);
+}
+
+@keyframes login-float {
+  to {
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+.login-glass {
+  background: var(--login-ink-raised);
+  border: 1px solid var(--login-ink-line);
+  border-radius: var(--login-card-radius);
+  box-shadow: var(--login-card-shadow);
+  backdrop-filter: blur(12px);
+}
+
+/* Barras do grafico decorativo crescem uma a uma na entrada. */
+.login-bar {
+  transform-origin: bottom;
+  transform: scaleY(0);
+  animation: login-bar-grow 900ms var(--login-ease) forwards;
+  animation-delay: calc(500ms + var(--i, 0) * 60ms);
+}
+
+@keyframes login-bar-grow {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Ponto "ao vivo" pulsando. */
+.login-pulse {
+  position: relative;
+}
+
+.login-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: login-ping 2.4s var(--login-ease) infinite;
+}
+
+@keyframes login-ping {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* Feedback de erro no formulario. */
+.login-shake {
+  animation: login-shake 420ms var(--login-ease);
+}
+
+@keyframes login-shake {
+  20%,
+  60% {
+    transform: translate3d(-6px, 0, 0);
+  }
+  40%,
+  80% {
+    transform: translate3d(6px, 0, 0);
+  }
+}
+
+.login-message {
+  animation: login-message-in 280ms var(--login-ease);
+}
+
+@keyframes login-message-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Check desenhado no estado de sucesso do botao. */
+.login-check path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: login-draw 420ms var(--login-ease) 80ms forwards;
+}
+
+@keyframes login-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Brilho que atravessa o botao principal no hover. */
+.login-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.login-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, oklch(1 0 0 / 0.22) 50%, transparent 70%);
+  transform: translate3d(-110%, 0, 0);
+  transition: transform 700ms var(--login-ease);
+}
+
+.login-sheen:hover::before {
+  transform: translate3d(110%, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-enter,
+  .login-bar {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .login-aurora,
+  .login-float,
+  .login-pulse::after,
+  .login-shake,
+  .login-message,
+  .login-check path {
+    animation: none;
+  }
+
+  .login-check path {
+    stroke-dashoffset: 0;
+  }
+
+  .login-parallax,
+  .login-sheen::before {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Aplicacao interna (IMS)
+   Mesma identidade da tela de login: sidebar na "tinta" escura do painel
+   visual, primaria azul e sinais (ok/baixo/sem estoque) consistentes.
+   ========================================================================== */
+@theme inline {
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-viz-in: var(--viz-in);
+  --color-viz-out: var(--viz-out);
+  --color-viz-value: var(--viz-value);
+  --color-viz-grid: var(--viz-grid);
+}
+
+:root {
+  --info: oklch(0.55 0.15 245);
+  --info-foreground: oklch(0.98 0.005 245);
+  --surface-sunken: oklch(0.97 0.004 250);
+
+  /* Paleta de graficos (validada para CVD e contraste: azul = entradas, laranja = saidas) */
+  --viz-in: #2a78d6;
+  --viz-out: #eb6834;
+  --viz-value: #2a78d6;
+  --viz-grid: oklch(0.92 0.006 250);
+
+  /* Sidebar: sempre escura, na tinta do painel de login */
+  --sidebar: oklch(0.17 0.03 262);
+  --sidebar-foreground: oklch(0.86 0.02 250);
+  --sidebar-primary: oklch(0.68 0.16 250);
+  --sidebar-primary-foreground: oklch(0.16 0.03 262);
+  --sidebar-accent: oklch(0.25 0.035 262);
+  --sidebar-accent-foreground: oklch(0.97 0.005 250);
+  --sidebar-border: oklch(0.82 0.03 250 / 0.1);
+  --sidebar-ring: oklch(0.68 0.16 250);
+}
+
+.dark {
+  --info: oklch(0.68 0.13 245);
+  --info-foreground: oklch(0.15 0.02 260);
+  --surface-sunken: oklch(0.16 0.02 260);
+  --viz-in: #3987e5;
+  --viz-out: #d95926;
+  --viz-value: #3987e5;
+  --viz-grid: oklch(0.3 0.02 260);
+  --sidebar: oklch(0.14 0.025 262);
+  --sidebar-accent: oklch(0.22 0.03 262);
+}
+
+/* Transicao discreta entre paginas */
+.page-enter {
+  animation: page-enter 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Numeros tabulares alinhados em tabelas e indicadores */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}

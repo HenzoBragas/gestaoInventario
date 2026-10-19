@@ -1,88 +1,37 @@
-import { useState, type FormEvent } from "react";
-import { Lock, Package, LogIn } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useAuth } from "@/lib/auth-provider";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { BrandMark } from "@/components/login/BrandMark";
+import { LoginForm } from "@/components/login/LoginForm";
+import { LoginShowcase } from "@/components/login/LoginShowcase";
 
+/**
+ * Tela de autenticacao: painel visual a esquerda (desktop) e formulario a direita.
+ * Em telas menores o formulario ocupa a tela inteira e o painel visual e omitido.
+ */
 export function LoginScreen() {
-  const { login } = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const ok = login(username, password);
-    if (!ok) {
-      setError("Usuário ou senha inválidos.");
-    }
-  }
-
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
-      </div>
+    <div className="login-root grid min-h-dvh bg-background lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+      <LoginShowcase />
 
-      <Card className="w-full max-w-sm border-none shadow-lg">
-        <CardHeader className="flex flex-col items-center gap-3 pt-8 text-center">
-          <div className="rounded-xl bg-primary p-3">
-            <Package className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Gestão de Inventário</h1>
-            <p className="text-sm text-muted-foreground">Faça login para continuar</p>
-          </div>
-        </CardHeader>
+      <main className="relative flex min-h-dvh flex-col overflow-hidden px-5 pb-8 pt-5 sm:px-10 lg:px-14 xl:px-20">
+        {/* Brilho sutil no topo para telas sem o painel visual. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,color-mix(in_oklch,var(--color-primary)_14%,transparent),transparent)] lg:hidden"
+        />
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            <div className="space-y-2">
-              <Label htmlFor="username">Usuário</Label>
-              <Input
-                id="username"
-                autoComplete="username"
-                placeholder="inventario"
-                value={username}
-                onChange={(event) => {
-                  setUsername(event.target.value);
-                  setError(null);
-                }}
-              />
-            </div>
+        <div className="relative flex items-center justify-between">
+          <BrandMark className="login-enter lg:invisible" />
+          <ThemeToggle />
+        </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                  setError(null);
-                }}
-              />
-            </div>
+        <div className="relative mx-auto flex w-full max-w-[420px] flex-1 items-center py-10">
+          <LoginForm />
+        </div>
 
-            {error && (
-              <p className="flex items-center gap-2 text-sm text-destructive">
-                <Lock className="h-4 w-4" />
-                {error}
-              </p>
-            )}
-
-            <Button type="submit" className="w-full">
-              <LogIn className="h-4 w-4" />
-              Entrar
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+        <footer className="relative text-center text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Gestão de Inventário · Projeto acadêmico
+        </footer>
+      </main>
     </div>
   );
 }
