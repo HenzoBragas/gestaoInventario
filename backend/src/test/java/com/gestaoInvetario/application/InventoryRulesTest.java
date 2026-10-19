@@ -67,6 +67,11 @@ class InventoryRulesTest {
     }
 
     @Test
+    void healthIsPublic() throws Exception {
+        mvc.perform(get("/health")).andExpect(status().isOk()).andExpect(jsonPath("$.status").value("UP"));
+    }
+
+    @Test
     void rejectsWrongPassword() throws Exception {
         mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\":\"inventario\",\"password\":\"errada\"}"))

@@ -6,8 +6,7 @@ const BACKEND_URL = process.env.BACKEND_URL ?? "https://gestao-inventario-backen
 export default async () => {
   const started = Date.now();
   try {
-    // /auth/me responde 401 sem token, mas a requisicao chega ao app e o mantem ativo.
-    const response = await fetch(`${BACKEND_URL}/auth/me`, { signal: AbortSignal.timeout(25_000) });
+    const response = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(25_000) });
     console.log(`keep-alive: HTTP ${response.status} em ${Date.now() - started} ms`);
   } catch (error) {
     console.error(`keep-alive: falhou apos ${Date.now() - started} ms`, error);
