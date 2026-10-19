@@ -11,11 +11,11 @@ import netlify from "@netlify/vite-plugin-tanstack-start";
 // Cloudflare para Netlify Functions. Fora dele (Docker/Render) o build segue igual.
 const isNetlify = process.env.NETLIFY === "true";
 
-// Alvo do proxy de API no modo dev. Por padrao aponta para o backend ao vivo (Render),
-// para que `npm run dev` ja exiba os dados reais sem precisar subir o backend localmente.
+// Alvo do proxy de API no modo dev. Por padrao aponta para o backend ao vivo (Render, o
+// mesmo do netlify.toml), para que `npm run dev` ja exiba os dados reais sem subir o backend.
 // Para usar um backend local, defina VITE_PROXY_TARGET=http://localhost:8080 antes do dev.
 const proxyTarget =
-	process.env.VITE_PROXY_TARGET ?? "https://gestao-inventario-backend.onrender.com";
+	process.env.VITE_PROXY_TARGET ?? "https://gestao-inventario-backend-522e.onrender.com";
 
 export default defineConfig({
 	...(isNetlify ? { cloudflare: false as const, plugins: [netlify()] } : {}),
