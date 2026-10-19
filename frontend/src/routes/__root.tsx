@@ -1,5 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-provider";
 import { ThemeProvider } from "@/lib/theme-provider";
@@ -38,16 +40,21 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Gestão de Inventário" },
+      { name: "description", content: "Sistema de gestão de inventário: estoque, movimentações e relatórios." },
+      { property: "og:title", content: "Gestão de Inventário" },
+      { property: "og:description", content: "Sistema de gestão de inventário: estoque, movimentações e relatórios." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        // Inter e JetBrains Mono ja eram as fontes declaradas no tema, mas nunca eram carregadas.
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Instrument+Serif:ital@1&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
@@ -61,7 +68,8 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    // O themeInitScript adiciona a classe `dark` antes da hidratacao, de proposito.
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         {/* Aplica o tema antes da pintura para evitar flash (FOUC de tema). */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
@@ -76,12 +84,32 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  // Um QueryClient por montagem (no SSR, evita compartilhar cache entre requisicoes).
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 30_000,
+            refetchOnWindowFocus: true,
+            // Erros de cliente (4xx) nao melhoram com nova tentativa.
+            retry: (failureCount, error) => {
+              const status = (error as { status?: number }).status ?? 0;
+              return status >= 400 && status < 500 ? false : failureCount < 2;
+            },
+          },
+        },
+      }),
+  );
+
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <Outlet />
-        <Toaster />
-      </ThemeProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ThemeProvider>
+          <Outlet />
+          <Toaster richColors closeButton position="top-right" />
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

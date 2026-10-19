@@ -1,42 +1,60 @@
 package com.gestaoInvetario.application.controllers;
 
-import com.gestaoInvetario.application.dtos.CategoryResponseDTO;
-import com.gestaoInvetario.application.dtos.CategoryRequestDTO;
+import com.gestaoInvetario.application.dtos.CatalogDtos.CategoryRequest;
+import com.gestaoInvetario.application.dtos.CatalogDtos.CategoryResponse;
+import com.gestaoInvetario.application.dtos.CatalogDtos.ReassignRequest;
 import com.gestaoInvetario.application.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
-    @Autowired
-    CategoryService service;
+
+    private final CategoryService service;
+
+    public CategoryController(CategoryService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getAll() {
+    public List<CategoryResponse> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> getById(@PathVariable Integer id) {
+    public CategoryResponse getById(@PathVariable Integer id) {
         return service.getById(id);
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> create(@RequestBody CategoryRequestDTO dto) {
-        return service.create(dto);
+    public ResponseEntity<CategoryResponse> create(@Valid @RequestBody CategoryRequest dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> update(@PathVariable Integer id, @RequestBody CategoryRequestDTO dto) {
+    public CategoryResponse update(@PathVariable Integer id, @Valid @RequestBody CategoryRequest dto) {
         return service.update(id, dto);
+    }
+
+    @PostMapping("/{id}/reassign")
+    public CategoryResponse reassign(@PathVariable Integer id, @Valid @RequestBody ReassignRequest request) {
+        return service.reassign(id, request.targetCategoryId());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        return service.delete(id);
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
