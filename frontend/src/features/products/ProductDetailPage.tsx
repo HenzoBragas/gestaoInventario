@@ -23,6 +23,7 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Pagination } from "@/components/common/Pagination";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/common/States";
 import { useMovementDialog } from "@/features/movements/MovementDialog";
+import { ProductInvoicesCard } from "@/features/invoices/InvoicesPage";
 import { ProductFormSheet } from "@/features/products/ProductFormSheet";
 import { useApiMutation, useLocations, useProduct, useProductMovements } from "@/lib/api/hooks";
 import { productsApi } from "@/lib/api/services";
@@ -151,6 +152,7 @@ export function ProductDetailPage() {
         <div className="space-y-4">
           <BalancesCard product={product} f={f} canMove={Boolean(canMove)} onTransfer={(locationId) => openMovement({ type: "TRANSFER", productId: id, locationId })} />
           <DetailsCard product={product} f={f} />
+          <ProductInvoicesCard productId={id} canWrite={can(role, "catalog:write")} f={f} />
         </div>
         <HistoryCard productId={id} f={f} />
       </div>

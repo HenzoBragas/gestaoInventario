@@ -11,7 +11,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { ALL_NAV_ITEMS } from "@/components/app/navigation";
+import { ALL_NAV_ITEMS, visibleItems } from "@/components/app/navigation";
 import { useMovementDialog } from "@/features/movements/MovementDialog";
 import { useCategories, useLocations, useSuppliers } from "@/lib/api/hooks";
 import { productsApi } from "@/lib/api/services";
@@ -155,7 +155,7 @@ export function CommandSearch({ open, onOpenChange }: { open: boolean; onOpenCha
           )}
         </CommandGroup>
         <CommandGroup heading="Ir para">
-          {ALL_NAV_ITEMS.map((item) => (
+          {visibleItems(ALL_NAV_ITEMS, role).map((item) => (
             <CommandItem key={item.to} value={`${item.label} ${item.keywords ?? ""}`} onSelect={() => go(item.to)}>
               <item.icon aria-hidden="true" /> {item.label}
             </CommandItem>

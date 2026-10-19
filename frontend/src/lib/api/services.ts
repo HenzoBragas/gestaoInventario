@@ -2,6 +2,11 @@ import { cleanParams, download, request } from "@/lib/api/client";
 import type {
   AppNotification,
   AuditEntry,
+  AuditQuery,
+  EmployeeOption,
+  Invoice,
+  InvoiceInput,
+  InvoiceQuery,
   Category,
   CategoryInput,
   Dashboard,
@@ -66,6 +71,20 @@ export const suppliersApi = {
   remove: (id: number) => request<void>({ method: "DELETE", url: `/suppliers/${id}` }),
 };
 
+export const invoicesApi = {
+  list: (query: InvoiceQuery) => request<Page<Invoice>>({ url: "/invoices", params: cleanParams(query) }),
+  create: (body: InvoiceInput) => request<Invoice>({ method: "POST", url: "/invoices", data: body }),
+  update: (id: number, body: InvoiceInput) => request<Invoice>({ method: "PUT", url: `/invoices/${id}`, data: body }),
+  remove: (id: number) => request<void>({ method: "DELETE", url: `/invoices/${id}` }),
+  attach: (id: number, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<Invoice>({ method: "PUT", url: `/invoices/${id}/file`, data: form, timeout: 120_000 });
+  },
+  detach: (id: number) => request<Invoice>({ method: "DELETE", url: `/invoices/${id}/file` }),
+  download: (id: number) => download(`/invoices/${id}/file`),
+};
+
 export const locationsApi = {
   list: () => request<StockLocation[]>({ url: "/locations" }),
   balances: (id: number) => request<LocationBalance[]>({ url: `/locations/${id}/balances` }),
@@ -104,6 +123,6 @@ export const adminApi = {
   updateUser: (id: number, body: UserInput) => request<User>({ method: "PUT", url: `/users/${id}`, data: body }),
   settings: () => request<Settings>({ url: "/settings" }),
   updateSettings: (body: SettingsInput) => request<Settings>({ method: "PUT", url: "/settings", data: body }),
-  audit: (params: { entity?: string; q?: string; page?: number; size?: number }) =>
-    request<Page<AuditEntry>>({ url: "/audit", params: cleanParams(params) }),
+  audit: (params: AuditQuery) => request<Page<AuditEntry>>({ url: "/audit", params: cleanParams(params) }),
+  employees: () => request<EmployeeOption[]>({ url: "/employees" }),
 };

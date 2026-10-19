@@ -19,14 +19,12 @@ public class CategoryService {
 
     private final CategoryRepository repository;
     private final ProductRepository productRepository;
-    private final AuditService audit;
     private final EntityManager entityManager;
 
-    public CategoryService(CategoryRepository repository, ProductRepository productRepository, AuditService audit,
+    public CategoryService(CategoryRepository repository, ProductRepository productRepository,
                            EntityManager entityManager) {
         this.repository = repository;
         this.productRepository = productRepository;
-        this.audit = audit;
         this.entityManager = entityManager;
     }
 
@@ -54,7 +52,6 @@ public class CategoryService {
         Category category = new Category(null, name, dto.inactive() != null ? dto.inactive() : 0,
                 blankToNull(dto.description()));
         Category saved = repository.save(category);
-        audit.record("CATEGORIA", saved.getSeq(), "CRIACAO", "Categoria " + name + " criada.");
         return toDTO(saved, 0);
     }
 
@@ -65,14 +62,11 @@ public class CategoryService {
         var existing = repository.findByNameIgnoreCase(name);
         if (existing.isPresent() && !existing.get().getSeq().equals(id)) {
             throw ApiException.conflict("CATEGORY_EXISTS", "Já existe uma categoria com esse nome.", "name");
-        }
-        boolean wasActive = category.isActive();
+        }
         category.setName(name);
         category.setDescription(blankToNull(dto.description()));
         category.setInactive(dto.inactive() != null ? dto.inactive() : 0);
-        repository.save(category);
-        String action = wasActive == category.isActive() ? "EDICAO" : (category.isActive() ? "REATIVACAO" : "DESATIVACAO");
-        audit.record("CATEGORIA", id, action, "Categoria " + name + " atualizada.");
+        repository.save(category);
         return toDTO(category, productRepository.countByCategory_Seq(id));
     }
 
@@ -87,12 +81,10 @@ public class CategoryService {
         if (!target.isActive()) {
             throw ApiException.unprocessable("CATEGORY_INACTIVE", "A categoria de destino está inativa.", "targetCategoryId");
         }
-        int moved = entityManager.createQuery("update Product p set p.category = :target where p.category = :source")
+        entityManager.createQuery("update Product p set p.category = :target where p.category = :source")
                 .setParameter("target", target)
                 .setParameter("source", source)
                 .executeUpdate();
-        audit.record("CATEGORIA", id, "REATRIBUICAO",
-                moved + " produto(s) movido(s) de " + source.getName() + " para " + target.getName() + ".");
         return toDTO(source, 0);
     }
 
@@ -105,7 +97,6 @@ public class CategoryService {
                     + " produto(s). Desative-a ou reatribua os produtos antes de excluir.", null);
         }
         repository.delete(category);
-        audit.record("CATEGORIA", id, "EXCLUSAO", "Categoria " + category.getName() + " excluída.");
     }
 
     private Category find(Integer id) {

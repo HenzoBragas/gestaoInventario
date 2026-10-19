@@ -3,7 +3,7 @@ import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Bell, Building2, Check, History, KeyRound, Loader2, Lock, Minus, Monitor, Moon, Palette, Plus, Shield, Sun, UserRound, Users, X } from "lucide-react";
+import { Bell, Building2, Check, KeyRound, Loader2, Lock, Minus, Monitor, Moon, Palette, Plus, Shield, Sun, UserRound, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,7 +12,6 @@ import { Switch } from "@/components/ui/switch";
 import { Field } from "@/components/common/Field";
 import { PageHeader } from "@/components/common/PageHeader";
 import { ErrorState } from "@/components/common/States";
-import { AuditPanel } from "@/features/settings/AuditPanel";
 import { Panel } from "@/features/settings/Panel";
 import { UsersPanel } from "@/features/settings/UsersPanel";
 import { keys, useApiMutation, useSettings } from "@/lib/api/hooks";
@@ -26,7 +25,7 @@ import { cn } from "@/lib/utils";
 
 const route = getRouteApi("/_app/settings");
 
-export type SettingsTab = "organization" | "preferences" | "notifications" | "account" | "users" | "permissions" | "audit";
+export type SettingsTab = "organization" | "preferences" | "notifications" | "account" | "users" | "permissions";
 
 export function SettingsPage() {
   const { tab = "organization" } = route.useSearch();
@@ -40,14 +39,13 @@ export function SettingsPage() {
     { id: "account", label: "Minha conta", icon: UserRound, visible: true },
     { id: "users", label: "Usuários", icon: Users, visible: can(role, "users:manage") },
     { id: "permissions", label: "Perfis e permissões", icon: Shield, visible: true },
-    { id: "audit", label: "Auditoria", icon: History, visible: can(role, "audit:read") },
   ];
   const visibleTabs = tabs.filter((t) => t.visible);
   const active = visibleTabs.some((t) => t.id === tab) ? tab : "organization";
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Configurações" description="Organização, preferências, conta, usuários e auditoria." />
+      <PageHeader title="Configurações" description="Organização, preferências, conta, usuários e permissões." />
       <div className="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
         <nav aria-label="Seções de configuração" className="min-w-0">
           <ul className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
@@ -76,7 +74,6 @@ export function SettingsPage() {
           {active === "account" && <AccountPanel />}
           {active === "users" && <UsersPanel />}
           {active === "permissions" && <PermissionsPanel />}
-          {active === "audit" && <AuditPanel />}
         </div>
       </div>
     </div>

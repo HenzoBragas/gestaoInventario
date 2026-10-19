@@ -6,6 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import netlify from "@netlify/vite-plugin-tanstack-start";
+import type { ProxyOptions } from "vite";
 
 // No build do Netlify (NETLIFY=true e definido automaticamente) trocamos o alvo de
 // Cloudflare para Netlify Functions. Fora dele (Docker/Render) o build segue igual.
@@ -29,6 +30,11 @@ export default defineConfig({
 					changeOrigin: true,
 					secure: false,
 					rewrite: (path: string) => path.replace(/^\/api/, ""),
+					// Para o navegador a API e mesma origem (/api); sem o Origin, o CORS do backend nao
+					// barra o dev server em portas fora da lista (ex.: um segundo `vite dev` na 3200).
+					configure: (proxy: Parameters<NonNullable<ProxyOptions["configure"]>>[0]) => {
+						proxy.on("proxyReq", (req) => req.removeHeader("origin"));
+					},
 				},
 			},
 		},

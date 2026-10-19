@@ -190,6 +190,52 @@ export interface MovementQuery {
   size?: number;
 }
 
+/** Nota fiscal de compra; fileName nulo = sem anexo. */
+export interface Invoice {
+  id: number;
+  number: string;
+  purchasePlace: string;
+  amount: number;
+  paymentDate: string;
+  productId: number;
+  productCode: string;
+  productName: string;
+  employeeId: number;
+  employeeName: string;
+  fileName: string | null;
+  fileType: string | null;
+  fileSize: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
+export interface InvoiceInput {
+  number: string;
+  purchasePlace: string;
+  amount: number;
+  paymentDate: string;
+  productId: number;
+  employeeId: number;
+}
+
+export interface InvoiceQuery {
+  q?: string;
+  productId?: number;
+  employeeId?: number;
+  from?: string;
+  to?: string;
+  sort?: string;
+  dir?: "asc" | "desc";
+  page?: number;
+  size?: number;
+}
+
+export interface EmployeeOption {
+  id: number;
+  name: string;
+  username: string;
+}
+
 export interface User {
   id: number;
   username: string;
@@ -315,12 +361,25 @@ export interface AppNotification {
   entityId: number;
 }
 
+/** Linha da tabela Auditoria (gravada pelos triggers do banco): um campo alterado por linha. */
 export interface AuditEntry {
   id: number;
-  entity: string;
-  entityId: string | null;
-  action: string;
-  summary: string;
-  username: string;
-  createdAt: string;
+  table: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+  changedAt: string;
+  employeeId: number | null;
+  employeeName: string | null;
+  dbUser: string;
+}
+
+export interface AuditQuery {
+  table?: string;
+  employeeId?: number;
+  q?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  size?: number;
 }

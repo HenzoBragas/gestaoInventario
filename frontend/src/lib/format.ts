@@ -13,6 +13,8 @@ export interface Formatters {
   date: (iso: string | null | undefined) => string;
   dateTime: (iso: string | null | undefined) => string;
   dayMonth: (isoDate: string) => string;
+  /** Data de calendario "YYYY-MM-DD" (sem hora), sem deslocamento de fuso. */
+  day: (isoDate: string | null | undefined) => string;
   relative: (iso: string | null | undefined) => string;
 }
 
@@ -29,6 +31,7 @@ export function createFormatters(locale: string, currency: string, timeZone: str
   const dateTime = new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short", timeZone });
   // Datas "YYYY-MM-DD" (sem hora) ja estao no fuso da organizacao: formatar em UTC evita deslocar o dia.
   const dayMonth = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", timeZone: "UTC" });
+  const day = new Intl.DateTimeFormat(locale, { dateStyle: "short", timeZone: "UTC" });
   const relative = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
 
   return {
@@ -41,6 +44,7 @@ export function createFormatters(locale: string, currency: string, timeZone: str
     date: (iso) => (iso ? date.format(new Date(iso)) : "—"),
     dateTime: (iso) => (iso ? dateTime.format(new Date(iso)) : "—"),
     dayMonth: (isoDate) => dayMonth.format(new Date(`${isoDate}T00:00:00Z`)).replace(".", ""),
+    day: (isoDate) => (isoDate ? day.format(new Date(`${isoDate}T00:00:00Z`)) : "—"),
     relative: (iso) => {
       if (!iso) return "—";
       const seconds = (new Date(iso).getTime() - Date.now()) / 1000;

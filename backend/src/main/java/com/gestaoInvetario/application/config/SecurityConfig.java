@@ -30,7 +30,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String[] CATALOG = {"/products/**", "/categories/**", "/suppliers/**", "/locations/**"};
+    private static final String[] CATALOG = {"/products/**", "/categories/**", "/suppliers/**", "/locations/**", "/invoices/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, UserAuthenticationConverter converter,

@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils";
 
 interface ProductPickerProps {
   id?: string;
-  value: Product | null;
+  /** Basta id, nome e SKU (ex.: produto ja vinculado a um registro em edicao). */
+  value: Pick<Product, "id" | "name" | "sku"> | null;
   onChange: (product: Product) => void;
   disabled?: boolean;
   /** Somente produtos ativos podem ser movimentados. */
@@ -70,7 +71,7 @@ export function ProductPicker({ id, value, onChange, disabled, activeOnly = true
                 <Loader2 className="h-4 w-4 animate-spin" /> Buscando…
               </div>
             ) : (
-              <CommandEmpty>Nenhum produto ativo encontrado.</CommandEmpty>
+              <CommandEmpty>{activeOnly ? "Nenhum produto ativo encontrado." : "Nenhum produto encontrado."}</CommandEmpty>
             )}
             <CommandGroup>
               {data?.items.map((product) => (

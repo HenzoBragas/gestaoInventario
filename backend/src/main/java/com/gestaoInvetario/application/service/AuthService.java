@@ -32,15 +32,13 @@ public class AuthService {
     private final AppUserRepository users;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokens;
-    private final AuditService audit;
     /** Contador em memoria por login (suficiente para uma instancia; use Redis se escalar horizontalmente). */
     private final Map<String, Attempts> attempts = new ConcurrentHashMap<>();
 
-    public AuthService(AppUserRepository users, PasswordEncoder passwordEncoder, TokenService tokens, AuditService audit) {
+    public AuthService(AppUserRepository users, PasswordEncoder passwordEncoder, TokenService tokens) {
         this.users = users;
         this.passwordEncoder = passwordEncoder;
         this.tokens = tokens;
-        this.audit = audit;
     }
 
     @Transactional
@@ -97,7 +95,6 @@ public class AuthService {
         }
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
         users.save(user);
-        audit.record("USUARIO", user.getId(), "SENHA", "Usuário " + user.getUsername() + " alterou a própria senha.");
     }
 
     private AppUser current() {
