@@ -1,3 +1,6 @@
 backend/target/
 .idea/
 .env
+.netlify
+.agents
+.claude

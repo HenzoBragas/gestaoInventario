@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "skills": {
+    "netlify-access-control": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-access-control/SKILL.md",
+      "computedHash": "cab79212874dd172042d1c3e2bd3ab7cb7d21677d87ac9b156b1b3f72d367def"
+    },
+    "netlify-agent-runner": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-agent-runner/SKILL.md",
+      "computedHash": "1fa075d3e8e78e874b275fa114bf4d9e5926e36d7032760ea0c13dcd33a7194e"
+    },
+    "netlify-ai-gateway": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-ai-gateway/SKILL.md",
+      "computedHash": "4b7e6fae23904c5fb4a93a1854e5a6bb4fc43a9fdacc5dbff5f8cf46d8f14ce8"
+    },
+    "netlify-blobs": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-blobs/SKILL.md",
+      "computedHash": "c5907484d8fe812bc56cc88c0d34fe40c8a09ccd63d800516313800b9ef6379f"
+    },
+    "netlify-caching": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-caching/SKILL.md",
+      "computedHash": "5692a773e59301f3ce92f443c6d875bd2410e9e884152afef7e566c6bd9f298a"
+    },
+    "netlify-config": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-config/SKILL.md",
+      "computedHash": "e97a3b5f3f6566b0e75d93ecbe8abe6578a72ddb50fc1b1ad84246ec7425be93"
+    },
+    "netlify-database": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-database/SKILL.md",
+      "computedHash": "ad04b421c27144117724b79f9469133bce75508391856499af0b7c6f47a9be2d"
+    },
+    "netlify-deploy": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-deploy/SKILL.md",
+      "computedHash": "29c331a9d42a09fca9a13bcd0edcf0ae4a76ca34c08e3e5d4cdbfe6dc715c525"
+    },
+    "netlify-edge-functions": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-edge-functions/SKILL.md",
+      "computedHash": "2b39086c8b59f72a0e20e76946f3512da313f2411a5f172158b3a124aa2b59fa"
+    },
+    "netlify-forms": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-forms/SKILL.md",
+      "computedHash": "8b833b69a4f4e1a151b1a2afb889307e9c8044aa3d7ef8cc6cc04254296f190b"
+    },
+    "netlify-frameworks": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-frameworks/SKILL.md",
+      "computedHash": "88c1c234014a3b8dcdc6ca59a412e69cfb5a8675baf80028da7ece17dec53b7b"
+    },
+    "netlify-functions": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-functions/SKILL.md",
+      "computedHash": "139688d578e2421d5aa37571ca12e9e0309b411f5f91a874548a1febd9cbd153"
+    },
+    "netlify-identity": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-identity/SKILL.md",
+      "computedHash": "98465b7a63a0085a078dd10da8f7e271e4b0b909face04c162027d0108cf954c"
+    },
+    "netlify-image-cdn": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-image-cdn/SKILL.md",
+      "computedHash": "ee1358c094a049c5419a33e2e9640f67f4e538ecc472522b021351df21a77320"
+    },
+    "netlify-mcp-servers": {
+      "source": "netlify/context-and-tools",
+      "sourceType": "github",
+      "skillPath": "skills/netlify-mcp-servers/SKILL.md",
+      "computedHash": "552f841e4ee2562c5bb6b0f1d47b2c60ec4ab717ed49267d0990656bf0925da5"
+    }
+  }
+}

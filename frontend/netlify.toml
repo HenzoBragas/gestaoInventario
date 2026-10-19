@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Substitui o proxy do server.js: /api/* vai para o backend Spring Boot no Render.
+[[redirects]]
+  from = "/api/*"
+  to = "https://gestao-inventario-backend-522e.onrender.com/:splat"
+  status = 200
+  force = true
