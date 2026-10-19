@@ -46,7 +46,7 @@ export const LoginField = forwardRef<HTMLInputElement, LoginFieldProps>(function
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={cn(
-            "h-12 rounded-xl bg-background pl-10 pr-11 text-[15px] shadow-none transition-[border-color,box-shadow,background-color] duration-200 md:text-[15px]",
+            "h-12 rounded-xl bg-background/60 pl-10 pr-11 text-[15px] shadow-none transition-[border-color,box-shadow,background-color] duration-200 md:text-[15px]",
             "hover:border-foreground/25",
             "focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15",
             error &&

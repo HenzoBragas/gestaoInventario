@@ -188,7 +188,7 @@ export function MovementsPage() {
         )}
       </div>
 
-      <section className="rounded-xl border bg-card shadow-xs" aria-label="Movimentações">
+      <section className="rounded-xl border glass" aria-label="Movimentações">
         <div className="border-b px-4 py-3 text-sm text-muted-foreground">{data ? `${f.number(data.totalItems)} movimentação(ões)` : "Carregando…"}</div>
         {isError ? (
           <ErrorState error={error} onRetry={() => refetch()} />

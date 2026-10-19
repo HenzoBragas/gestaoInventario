@@ -144,7 +144,7 @@ export function ProductsPage() {
 
       <ProductFilters search={filters} onChange={setSearch} show={{ supplier: true }} />
 
-      <section className="rounded-xl border bg-card shadow-xs" aria-label="Produtos">
+      <section className="rounded-xl border glass" aria-label="Produtos">
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b px-4 py-2">
           {selected.size > 0 ? (
             <div className="flex flex-wrap items-center gap-2 text-sm" role="status">

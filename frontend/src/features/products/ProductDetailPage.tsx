@@ -48,7 +48,7 @@ export function ProductDetailPage() {
 
   if (isError) {
     return (
-      <div className="rounded-xl border bg-card">
+      <div className="rounded-xl border glass">
         {error?.status === 404 ? (
           <EmptyState
             icon={PackageX}
@@ -181,7 +181,7 @@ function marginHint(p: Product, f: Formatters) {
 
 function Stat({ label, value, hint, loading }: { label: string; value?: string | null | false; hint?: string | null | false; loading: boolean }) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-xs">
+    <div className="rounded-xl border glass p-4">
       <p className="text-[13px] text-muted-foreground">{label}</p>
       {loading ? <Skeleton className="mt-2 h-7 w-28" /> : <p className="tabular mt-1 text-xl font-semibold">{value}</p>}
       {!loading && hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
@@ -192,7 +192,7 @@ function Stat({ label, value, hint, loading }: { label: string; value?: string |
 function BalancesCard({ product, f, canMove, onTransfer }: { product?: Product; f: Formatters; canMove: boolean; onTransfer: (locationId: number) => void }) {
   const { data: locations } = useLocations();
   return (
-    <section className="rounded-xl border bg-card shadow-xs" aria-label="Saldos por localização">
+    <section className="rounded-xl border glass" aria-label="Saldos por localização">
       <header className="border-b px-5 py-3.5">
         <h2 className="text-sm font-semibold">Saldos por localização</h2>
       </header>
@@ -251,7 +251,7 @@ function DetailsCard({ product, f }: { product?: Product; f: Formatters }) {
       ]
     : [];
   return (
-    <section className="rounded-xl border bg-card shadow-xs" aria-label="Dados do cadastro">
+    <section className="rounded-xl border glass" aria-label="Dados do cadastro">
       <header className="border-b px-5 py-3.5">
         <h2 className="text-sm font-semibold">Dados do cadastro</h2>
       </header>
@@ -289,7 +289,7 @@ function HistoryCard({ productId, f }: { productId: number; f: Formatters }) {
   const [page, setPage] = useState(0);
   const { data, isLoading, isError, error, refetch, isPlaceholderData } = useProductMovements(productId, page);
   return (
-    <section className="rounded-xl border bg-card shadow-xs xl:col-span-2" aria-label="Histórico de movimentações">
+    <section className="rounded-xl border glass xl:col-span-2" aria-label="Histórico de movimentações">
       <header className="flex items-center justify-between border-b px-5 py-3.5">
         <h2 className="text-sm font-semibold">Histórico de movimentações</h2>
         <Link to="/movements" search={{ productId } as never} className="text-xs font-medium text-primary hover:underline">

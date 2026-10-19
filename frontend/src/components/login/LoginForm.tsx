@@ -364,7 +364,7 @@ function SocialButton({ provider }: { provider: keyof typeof PROVIDERS }) {
       disabled
       aria-label={`Entrar com ${label} (em breve)`}
       title="Login social em breve"
-      className="relative inline-flex h-11 items-center justify-center gap-2 rounded-xl border bg-background text-sm font-medium text-foreground/70 disabled:cursor-not-allowed"
+      className="relative inline-flex h-11 items-center justify-center gap-2 rounded-xl border glass-subtle text-sm font-medium text-foreground/70 disabled:cursor-not-allowed"
     >
       <span className="opacity-60 grayscale-[35%]">{logo}</span>
       {label}

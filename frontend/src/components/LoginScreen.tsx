@@ -9,7 +9,8 @@ import { LoginShowcase } from "@/components/login/LoginShowcase";
  */
 export function LoginScreen() {
   return (
-    <div className="login-root grid min-h-dvh bg-background lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+    <div className="login-root grid min-h-dvh lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+      <div aria-hidden="true" className="app-ambient" />
       <LoginShowcase />
 
       <main className="relative flex min-h-dvh flex-col overflow-hidden px-5 pb-8 pt-5 sm:px-10 lg:px-14 xl:px-20">
@@ -24,8 +25,11 @@ export function LoginScreen() {
           <ThemeToggle />
         </div>
 
-        <div className="relative mx-auto flex w-full max-w-[420px] flex-1 items-center py-10">
-          <LoginForm />
+        <div className="relative mx-auto flex w-full max-w-[420px] flex-1 items-center py-10 sm:max-w-[484px]">
+          {/* Painel em vidro a partir do sm; no celular o formulario ocupa a tela. */}
+          <div className="w-full sm:glass sm:rounded-3xl sm:border sm:p-8">
+            <LoginForm />
+          </div>
         </div>
 
         <footer className="relative text-center text-xs text-muted-foreground">

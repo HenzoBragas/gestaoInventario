@@ -76,7 +76,7 @@ export function DashboardPage() {
       />
 
       {isError ? (
-        <div className="rounded-xl border bg-card">
+        <div className="rounded-xl border glass">
           <ErrorState error={error} onRetry={() => refetch()} />
         </div>
       ) : (
@@ -299,7 +299,7 @@ function Distribution({ data, loading, f }: { data?: Dashboard; loading: boolean
 
 function Alerts({ data, loading }: { data?: Dashboard; loading: boolean }) {
   return (
-    <section className="flex min-w-0 flex-col rounded-xl border bg-card shadow-xs" aria-label="Alertas operacionais">
+    <section className="flex min-w-0 flex-col rounded-xl border glass" aria-label="Alertas operacionais">
       <header className="px-5 pt-4">
         <h2 className="text-sm font-semibold">Alertas operacionais</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">Itens que exigem atenção</p>
@@ -396,7 +396,7 @@ function AlertGroup({
 
 function RecentActivity({ movements, loading, f }: { movements?: Movement[]; loading: boolean; f: Formatters }) {
   return (
-    <section className="flex min-w-0 flex-col rounded-xl border bg-card shadow-xs" aria-label="Atividade recente">
+    <section className="flex min-w-0 flex-col rounded-xl border glass" aria-label="Atividade recente">
       <header className="flex items-start justify-between gap-3 px-5 pt-4">
         <div>
           <h2 className="text-sm font-semibold">Atividade recente</h2>

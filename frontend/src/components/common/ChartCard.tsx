@@ -15,7 +15,7 @@ interface ChartCardProps {
 export function ChartCard({ title, description, actions, className, table, children }: ChartCardProps) {
   const [view, setView] = useState<"chart" | "table">("chart");
   return (
-    <section className={cn("flex min-w-0 flex-col rounded-xl border bg-card shadow-xs", className)} aria-label={title}>
+    <section className={cn("flex min-w-0 flex-col rounded-xl border glass", className)} aria-label={title}>
       <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold">{title}</h2>

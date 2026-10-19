@@ -10,11 +10,13 @@ import { navItemFor } from "@/components/app/navigation";
 import { NotificationsMenu } from "@/components/app/NotificationsMenu";
 import { UserMenu } from "@/components/app/UserMenu";
 import { MovementDialogProvider } from "@/features/movements/MovementDialog";
+import { useGlassPointer } from "@/hooks/use-glass-pointer";
 import { useProduct } from "@/lib/api/hooks";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useGlassPointer();
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -26,9 +28,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             Pular para o conteúdo
           </a>
+          <div aria-hidden="true" className="app-ambient" />
           <AppSidebar />
-          <SidebarInset className="min-w-0 bg-background">
-            <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/85 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/70 sm:px-6">
+          <SidebarInset className="min-w-0 bg-transparent">
+            {/* Barra flutuante em vidro: o conteudo rola por tras dela. */}
+            <header className="glass sticky top-3 z-30 mx-3 mt-3 flex h-14 items-center gap-3 rounded-2xl border px-3 sm:mx-4 sm:px-4">
               <SidebarTrigger className="-ml-1" aria-label="Abrir ou recolher o menu" />
               <Separator orientation="vertical" className="h-5" />
               <Breadcrumbs pathname={pathname} />

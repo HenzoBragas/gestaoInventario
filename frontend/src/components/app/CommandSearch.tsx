@@ -32,7 +32,7 @@ export function SearchTrigger({ onOpen }: { onOpen: () => void }) {
   return (
     <button
       onClick={onOpen}
-      className="flex h-9 w-full max-w-md items-center gap-2 rounded-lg border bg-background px-3 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-9 w-full max-w-md items-center gap-2 rounded-lg border glass-subtle px-3 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Buscar produtos e registros (Ctrl+K)"
     >
       <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
