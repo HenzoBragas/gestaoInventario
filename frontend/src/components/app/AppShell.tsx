@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <AppSidebar />
           <SidebarInset className="min-w-0 bg-transparent">
             {/* Barra flutuante em vidro: o conteudo rola por tras dela. */}
-            <header className="glass sticky top-3 z-30 mx-3 mt-3 flex h-14 items-center gap-3 rounded-2xl border px-3 sm:mx-4 sm:px-4">
+            <header className="glass glass-blur sticky top-3 z-30 mx-3 mt-3 flex h-14 items-center gap-3 rounded-2xl border px-3 sm:mx-4 sm:px-4">
               <SidebarTrigger className="-ml-1" aria-label="Abrir ou recolher o menu" />
               <Separator orientation="vertical" className="h-5" />
               <Breadcrumbs pathname={pathname} />
