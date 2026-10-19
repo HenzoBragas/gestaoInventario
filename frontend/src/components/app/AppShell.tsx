@@ -40,12 +40,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <UserMenu />
               </div>
             </header>
-            <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+            {/* SidebarInset ja e o <main>: aqui so o alvo do "pular para o conteudo". */}
+            <div id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
               {/* key: reanima a entrada a cada troca de pagina. */}
               <div key={pathname.split("/")[1]} className="page-enter mx-auto w-full max-w-[1400px] px-4 py-6 sm:px-6 lg:py-8">
                 {children}
               </div>
-            </main>
+            </div>
           </SidebarInset>
           <CommandSearch open={searchOpen} onOpenChange={setSearchOpen} />
         </SidebarProvider>

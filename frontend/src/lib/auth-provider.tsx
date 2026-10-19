@@ -139,6 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = readSession();
     if (!stored) clearSession();
+    // Atualiza a ref ja: a chamada a /auth/me abaixo sai antes do proximo render.
+    sessionRef.current = stored;
     setSession(stored);
     setIsReady(true);
     if (stored) {

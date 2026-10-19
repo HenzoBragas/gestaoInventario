@@ -53,8 +53,9 @@ http.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
     const apiError = toApiError(error);
-    const url = error instanceof AxiosError ? (error.config?.url ?? "") : "";
-    if (apiError.status === 401 && !url.includes("/auth/login")) handleUnauthorized();
+    // So um 401 de requisicao que levava token indica sessao expirada/invalidada.
+    const sentToken = error instanceof AxiosError && Boolean(error.config?.headers?.has("Authorization"));
+    if (apiError.status === 401 && sentToken) handleUnauthorized();
     return Promise.reject(apiError);
   },
 );
