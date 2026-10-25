@@ -1,289 +1,258 @@
 # 📦 Sistema de Gestão de Inventário
 
-Um sistema completo de controle de inventario desenvolvido com **Spring Boot**, **React** e **MySQL**, containerizado com Docker para fácil deployment e desenvolvimento.
+Sistema completo para gestão de estoque, produtos, movimentações e relatórios, desenvolvido com **Spring Boot**, **React** e **MySQL**. A aplicação foi expandida para atender operações mais completas de controle operacional, com autenticação, dashboard, cadastros e auditoria.
 
 ---
 
 ## 🎯 Visão Geral
 
-O **Sistema de Gestão de Inventário** centraliza o cadastro de produtos e categorias, oferecendo:
+O projeto centraliza as principais operações da área de inventário em uma plataforma web moderna, permitindo:
 
-- ✅ Controle total de estoque em tempo real
-- ✅ Painel com indicadores e estatísticas
-- ✅ Interface intuitiva com dialogs para CRUD
-- ✅ Banco de dados relacional com integridade referencial
-- ✅ Arquitetura moderna e escalável
+- ✅ Controle em tempo real do estoque
+- ✅ Dashboard com indicadores operacionais
+- ✅ Gestão de produtos, categorias, fornecedores e localizações
+- ✅ Registro de entradas, saídas, ajustes e transferências
+- ✅ Relatórios e visualização de movimentações
+- ✅ Configurações de organização, usuários, permissões e preferências
+- ✅ Autenticação por usuário com roles e acesso baseado em permissões
+- ✅ Arquitetura pronta para uso local e em ambiente de produção
 
-**Objetivo:** Eliminar a necessidade de planilhas ou scripts manuais, fornecendo uma plataforma centralizada para gerenciar produtos e seus estoques.
+**Objetivo:** reduzir a dependência de planilhas e processos manuais, oferecendo uma solução centralizada para gestão de estoque e operações da empresa.
 
 ---
-## 🔓 ** Acesso ao provedor da aplicação - Render
-https://gestao-inventario-frontend.onrender.com/
 
-### Usuário e senha
+## 🔓 Acesso da aplicação
 
-**Usuario: inventario**
+### Ambiente de demonstração
 
-**Senha: inventario123**
+- URL: https://gestao-inventario-frontend.onrender.com/
+- Usuário: `inventario`
+- Senha: `inventario123`
 
-## 📦 Estrutura do Projeto
-```
+---
+
+## 📦 Estrutura do projeto
+
+```text
 gestaoInventario/
-│
 ├── backend/
-│   ├── src/main/java/com/gestaoInvetario/
-│   │   ├── application/
-│   │   │   ├── controllers/
-│   │   │   │   └── ProductController.java
-│   │   │   ├── service/
-│   │   │   │   └── ProductService.java
-│   │   │   ├── model/
-│   │   │   │   ├── Product.java       
-│   │   │   │   └── Category.java
-│   │   │   ├── repositories/
-│   │   │   │   └── ProductRepository.java
-│   │   │   └── dtos/
-│   │   │       ├── ProductRequestDto.java
-│   │   │       └── ProductResponseDto.java
-│   │   └── application.properties
-│   └── pom.xml
-│
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/gestaoInvetario/
+│   │   │   │   ├── application/
+│   │   │   │   ├── config/
+│   │   │   │   ├── controllers/
+│   │   │   │   ├── dtos/
+│   │   │   │   ├── exception/
+│   │   │   │   ├── model/
+│   │   │   │   ├── repositories/
+│   │   │   │   ├── security/
+│   │   │   │   └── service/
+│   │   │   └── resources/
+│   │   └── test/
+│   ├── pom.xml
+│   └── mvnw
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/
 │   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   └── App.tsx
-│   └── package.json
-│
+│   │   ├── features/
+│   │   │   ├── dashboard/
+│   │   │   ├── inventory/
+│   │   │   ├── movements/
+│   │   │   ├── products/
+│   │   │   ├── catalog/
+│   │   │   ├── reports/
+│   │   │   └── settings/
+│   │   ├── lib/
+│   │   ├── routes/
+│   │   └── styles.css
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── Dockerfile
 ├── database/
 │   └── init/
-│       ├── 01-GestaoInventario.sql    # Criação de tabelas
-│       └── 02-script_inventario.sql   # Dados iniciais
-│
+│       ├── GestaoInventario.sql
+│       └── script_inventario.sql
 ├── docker-compose.yml
-└── README.md
-
+├── mysql-compose.yml
+├── render.yaml
+├── README.md
+└── skills-lock.json
 ```
+
 ---
 
-## 🏗️ Arquitetura do Sistema
-```
-Fluxo Principal
-┌─────────────────────────────────────────────────────────┐
-│                   CLIENTE (Browser)                     │
-│              React 19 + TanStack Router                 │
-│               http://localhost:3000                     │     │                                                         │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-                        │ HTTP/REST
-                        │ Axios
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│              BACKEND - Spring Boot 3.4.5                │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Controller Layer (ProductController)              │ │
-│  │  Endpoints: GET, POST, PUT, DELETE                 │ │
-│  └────────────────────────────────────────────────────┘ │
-│                        ▲                                │
-│                        │                                │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Service Layer (ProductService)                    │ │
-│  │  - Lógica de negócio                               │ │
-│  │  - Validações                                      │ │
-│  │  - Conversão de DTOs                               │ │
-│  └────────────────────────────────────────────────────┘ │
-│                        ▲                                │
-│                        │                                │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Repository Layer (ProductRepository)              │ │
-│  │  - Spring Data JPA                                 │ │
-│  │  - Operações CRUD                                  │ │
-│  └────────────────────────────────────────────────────┘ │
-│                         ▲                               │
-│               http://localhost:8080                     │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-                        │ SQL/JDBC
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│         DATABASE - MySQL 8.0                            │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Tabela: produto                                   │ │
-│  │  Tabela: categoria                                 │ │
-│  │  Relacionamento: produto FK -> categoria           │ │
-│  └────────────────────────────────────────────────────┘ │
-│  localhost:3306                                         │
-└─────────────────────────────────────────────────────────┘
-```
+## 🧩 Funcionalidades atuais
 
-## 📋 Modelo de Dados - Entidade Product
+### Dashboard operacional
+- Indicadores de produtos ativos, unidades em estoque, valor estimado e alertas
+- Gráficos de entradas e saídas por período
+- Comparativo de movimentações e evolução do valor do inventário
+- Produtos mais movimentados e atividades recentes
+- Acesso rápido para ações de estoque e movimentação
 
-### Classe Product (Java)
+### Inventário
+- Consulta do saldo atual dos produtos
+- Filtros por categoria, status, localizações e busca por texto
+- Visualização de produtos com baixo estoque e sem estoque
+- Controle de posições de estoque por item e por local
 
-```java
-@Entity
-@Table(name = "produto")
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;                    // PK - Identificador único
-    
-    @Column(length = 20, nullable = false)
-    private String code;                   // Código/SKU do produto
-    
-    @Column(length = 30, nullable = false)
-    private String name;                   // Nome do produto
-    
-    @Column(length = 30, nullable = false)
-    private String model;                  // Modelo/Variação
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Categoria")        // FK para tabela categoria
-    private Category category;              // Relacionamento com Categoria
-    
-    @Column(nullable = false)
-    private Integer stock;                 // Quantidade em estoque
-    
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private Date updatedAt;                // Data última atualização
-}
-```
-
-### 🔍 Explicação dos Campos
-
-| Campo | Tipo | Restrição | Descrição |
-|-------|------|-----------|-----------|
-| **id** | Integer | PK, AI | Identificador único do produto (auto-incrementado) |
-| **code** | String(20) | NOT NULL, UNIQUE | Código/SKU único para identificar o produto rapidamente |
-| **name** | String(30) | NOT NULL | Nome descritivo do produto |
-| **model** | String(30) | NOT NULL | Modelo ou variação do produto |
-| **category** | Category | FK, NOT NULL | Referência à categoria (relacionamento ManyToOne) |
-| **stock** | Integer | NOT NULL | Quantidade disponível em estoque |
-| **updatedAt** | Date | NOT NULL | Timestamp automático da última atualização |
-
-### 📌 Relacionamentos
-
-#### ManyToOne: Produto → Categoria
-
-```java
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "Categoria", nullable = false)
-private Category category;
-```
-
-**O que significa:**
-- **Muitos** produtos podem pertencer a **Uma** categoria
-- `@JoinColumn` cria a coluna `Categoria` como chave estrangeira
-- `FetchType.LAZY` carrega a categoria apenas quando acessada (melhor performance)
-- `nullable = false` garante que todo produto tenha uma categoria
-
-**Exemplo de dados:**
-
-| id | code | name | model | category_id | stock | updatedAt |
-|:--:|:----:|:----:|:-----:|:-----------:|:-----:|:---------:|
-| 1 | SKU001 | Mouse | Óptico | 2 | 50 | 2025-05-28 |
-| 2 | SKU002 | Teclado | Mecânico | 2 | 30 | 2025-05-28 |
-| 3 | SKU003 | Monitor | LED | 3 | 15 | 2025-05-28 |
-
-
-
-
-
-## 📊 Funcionalidades
-
-### Dashboard
-- Total de produtos cadastrados
-- Total de categorias
-- Produtos com baixo estoque
-- Últimas atualizações
+### Movimentações
+- Registro de entradas, saídas, ajustes e transferências
+- Histórico completo de movimentações
+- Atualização automática do saldo do produto
+- Visualização por período e por tipo de operação
 
 ### Produtos
-- Criar novo produto
-- Editar nome, categoria, modelo e estoque
-- Deletar produto
-- Listar todos com filtros
+- Cadastro de produtos com código, nome, categoria, custo, estoque e valor de referência
+- Edição e exclusão de registros
+- Pesquisa por produto e filtros de visualização
+- Detalhamento do item e acesso a ações de movimentação
 
-### Categorias
-- Criar categoria
-- Editar nome
-- Deletar categoria
+### Catálogo e cadastros auxiliares
+- Categorias
+- Fornecedores
+- Localizações/armazéns
+- Organização dos cadastros para manter o inventário consistente
 
-# 🚀 Usando a aplicação
+### Relatórios e análise
+- Visão geral do desempenho do estoque
+- Acompanhamento do valor do inventário
+- Comparativo de séries temporais
+- Exportação útil para acompanhamento e análise
+
+### Configurações e governança
+- Organização: nome da empresa, moeda, timezone, unidades e estoque mínimo padrão
+- Preferências: tema, idioma e aparência da aplicação
+- Notificações e conta do usuário
+- Gestão de usuários e perfis
+- Permissões por papel
+- Auditoria de eventos e ações no sistema
+
+### Segurança e acesso
+- Login com autenticação via API
+- Controle de acesso baseado em permissões
+- Fluxo protegido por rota privada e sessão autenticada
+
+---
+
+## 🏗️ Arquitetura do sistema
+
+```text
+Cliente (React + Vite)
+        │
+        │ HTTP/REST
+        ▼
+Backend (Spring Boot + Java 17)
+        │
+        │ JPA / Repository / Service
+        ▼
+Banco de dados (MySQL 8)
+```
+
+A aplicação usa uma arquitetura em camadas:
+
+- Frontend com interface moderna e navegação por rotas
+- Backend com controllers, serviços e repositórios
+- Persistência com MySQL e relacionamento entre entidades de negócio
+- Autenticação e autorização para garantir acesso por perfil
+
+---
+
+## 🚀 Como executar localmente
 
 ### Primeira vez
 
 ```bash
-# 1. Abrir terminal na pasta do projeto
+# 1. Entrar na pasta do projeto
 cd gestaoInventario
 
-# 2. Subir tudo
+# 2. Subir os containers
 docker compose up -d --build
 
-# 3 Aguarda o container ser criado
-
-#4 Verificar se container foi criado
+# 3. Verificar se os serviços iniciaram
 docker ps
 
-# 4.1 Se for criado e inicializado so prosseguir para proximo passo e houve algum erro apague o container e repetida o processo 
-# 5. Abrir navegador
+# 4. Acessar a aplicação no navegador
 http://localhost:3000
-
 ```
 
 ### Próximas vezes
 
 ```bash
-# 1. Subir
 docker compose up -d
+```
 
-# 2. Usar
-http://localhost:3000
+### Para parar os serviços
 
-# 3. Parar
+```bash
 docker compose down
 ```
 
-
-
-## 🛠️ Stack Tecnológico
-
-### **Backend**
-- **Java 17** - Linguagem principal
-- **Spring Boot 3.4.5** - Framework web
-- **Spring Data JPA** - ORM e persistência
-- **Lombok** - Reduz boilerplate (getters, setters, construtores)
-- **Hibernate** - Provider JPA
-- **Maven** - Gerenciador de dependências
-
-### **Frontend**
-- **React 19** - Framework UI
-- **TypeScript** - Tipagem estática
-- **TanStack Router** - Roteamento client-side
-- **TanStack Table** - Tabelas complexas
-- **Tailwind CSS** - Estilização
-- **React Hook Form** - Formulários
-- **Zod** - Validação de schema
-- **Axios** - Cliente HTTP
-- **Vite** - Build tool
-
-### **Banco de Dados**
-- **MySQL 8.0** - SGBD relacional
-- **InnoDB** - Engine com suporte a transações
-
-### **DevOps**
-- **Docker** - Containerização
-- **Docker Compose** - Orquestração local
+> O frontend fica disponível na porta `3000`, o backend em `8080` e o banco MySQL em `3306`.
 
 ---
 
-### 👥 **Colaboradores**
-- Bruno Araujo 
+## 🛠️ Stack tecnológico
+
+### Backend
+- **Java 17**
+- **Spring Boot 3.4.5**
+- **Spring Data JPA**
+- **Hibernate**
+- **Maven**
+- **Spring Security**
+
+### Frontend
+- **React 19**
+- **TypeScript**
+- **Vite**
+- **TanStack Router**
+- **React Hook Form**
+- **Zod**
+- **Tailwind CSS**
+- **Axios**
+- **Shadcn UI / Componentes reutilizáveis**
+
+### Banco de dados
+- **MySQL 8.0**
+
+### Infraestrutura
+- **Docker**
+- **Docker Compose**
+- **Render** (deploy da aplicação de demonstração)
+
+---
+
+## � Futuras implementações
+
+### Autenticação e segurança
+- Melhorias no fluxo de login com autenticação mais robusta e tokens com expiração controlada
+- Controle granular de permissões por módulo e perfil de usuário
+- Recuperação de senha, autenticação multifator e logs de acesso
+- Expansão da camada de segurança para ambientes de produção
+
+### Integração com marketplaces
+- Webhooks do Mercado Livre para sincronização de vendas, estoque e status de pedidos
+- Webhooks da Shopee para atualização automática de produtos e pedidos
+- Processamento assíncrono de eventos com fila e retry para garantir confiabilidade
+- Centralização de pedidos, faturamento e estoque entre canais de venda
+
+### Visão estratégica
+- Conexão da plataforma com ERP e canais de e-commerce
+- Padronização de integrações para escalar a gestão de inventário com múltiplos marketplaces
+- Dashboard específico para performance de vendas e logística
+
+---
+
+## �👥 Colaboradores
+
+- Bruno Araujo
 - Giovanny Lino
 - Guilherme Carmo
 - Henrique Biciato
 - Henzo Bragas
 - Kaue Righetti
+
+---
+
