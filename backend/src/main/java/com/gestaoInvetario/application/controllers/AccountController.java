@@ -1,6 +1,7 @@
 package com.gestaoInvetario.application.controllers;
 
 import com.gestaoInvetario.application.dtos.AccountDtos.ChangePasswordRequest;
+import com.gestaoInvetario.application.dtos.AccountDtos.EmployeeOption;
 import com.gestaoInvetario.application.dtos.AccountDtos.LoginRequest;
 import com.gestaoInvetario.application.dtos.AccountDtos.LoginResponse;
 import com.gestaoInvetario.application.dtos.AccountDtos.PreferencesRequest;
@@ -15,6 +16,7 @@ import com.gestaoInvetario.application.service.AuthService;
 import com.gestaoInvetario.application.service.SettingsService;
 import com.gestaoInvetario.application.service.UserService;
 import jakarta.validation.Valid;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,11 +90,20 @@ public class AccountController {
         return settings.update(request);
     }
 
+    /** Funcionarios ativos para seletores (ex.: responsavel pela nota fiscal). */
+    @GetMapping("/employees")
+    public List<EmployeeOption> employees() {
+        return users.options();
+    }
+
     @GetMapping("/audit")
-    public PageResponse<AuditEntry> audit(@RequestParam(required = false) String entity,
+    public PageResponse<AuditEntry> audit(@RequestParam(required = false) String table,
+                                          @RequestParam(required = false) Integer employeeId,
                                           @RequestParam(required = false) String q,
+                                          @RequestParam(required = false) Instant from,
+                                          @RequestParam(required = false) Instant to,
                                           @RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "25") int size) {
-        return audit.search(entity, q, page, size);
+        return audit.search(table, employeeId, q, from, to, page, size);
     }
 }

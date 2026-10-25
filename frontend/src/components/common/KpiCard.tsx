@@ -50,13 +50,13 @@ export function KpiCard({ label, value, icon: Icon, hint, delta, tone = "default
   );
 
   const className =
-    "group block rounded-xl border bg-card p-4 shadow-xs transition-[border-color,box-shadow] duration-200";
+    "group block rounded-xl border glass p-4";
   if (to) {
     return (
       <Link
         to={to}
         search={search as never}
-        className={cn(className, "hover:border-primary/40 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
+        className={cn(className, "glass-interactive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring")}
       >
         {body}
       </Link>

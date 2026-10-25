@@ -110,7 +110,7 @@ export function InventoryPage() {
 
       <ProductFilters search={search} onChange={setSearch} show={{ location: true }} />
 
-      <section className="rounded-xl border bg-card shadow-xs" aria-label="Itens do inventário">
+      <section className="rounded-xl border glass" aria-label="Itens do inventário">
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b px-4 py-2">
           {selected.size > 0 ? (
             <div className="flex flex-wrap items-center gap-2 text-sm" role="status">

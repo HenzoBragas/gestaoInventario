@@ -11,7 +11,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { ALL_NAV_ITEMS } from "@/components/app/navigation";
+import { ALL_NAV_ITEMS, visibleItems } from "@/components/app/navigation";
 import { useMovementDialog } from "@/features/movements/MovementDialog";
 import { useCategories, useLocations, useSuppliers } from "@/lib/api/hooks";
 import { productsApi } from "@/lib/api/services";
@@ -32,7 +32,7 @@ export function SearchTrigger({ onOpen }: { onOpen: () => void }) {
   return (
     <button
       onClick={onOpen}
-      className="flex h-9 w-full max-w-md items-center gap-2 rounded-lg border bg-background px-3 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex h-9 w-full max-w-md items-center gap-2 rounded-lg border glass-subtle px-3 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Buscar produtos e registros (Ctrl+K)"
     >
       <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -155,7 +155,7 @@ export function CommandSearch({ open, onOpenChange }: { open: boolean; onOpenCha
           )}
         </CommandGroup>
         <CommandGroup heading="Ir para">
-          {ALL_NAV_ITEMS.map((item) => (
+          {visibleItems(ALL_NAV_ITEMS, role).map((item) => (
             <CommandItem key={item.to} value={`${item.label} ${item.keywords ?? ""}`} onSelect={() => go(item.to)}>
               <item.icon aria-hidden="true" /> {item.label}
             </CommandItem>

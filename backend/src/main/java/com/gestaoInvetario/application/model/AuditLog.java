@@ -11,34 +11,48 @@ import java.time.Instant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Immutable;
 
-/** Trilha de auditoria das alteracoes de cadastro, usuarios e configuracoes. */
+/**
+ * Tabela Auditoria do script do banco ("Tabelas BD.sql"): uma linha por campo alterado.
+ * Gravada exclusivamente pelos triggers (db/auditoria-triggers.sql); a aplicacao so le.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "auditoria", indexes = @Index(name = "idx_auditoria_data", columnList = "Dta_evento"))
+@Immutable
+@Table(name = "auditoria", indexes = {
+        @Index(name = "idx_auditoria_dta", columnList = "Dta_alteracao"),
+        @Index(name = "idx_auditoria_tabela", columnList = "Tabela_alterada")
+})
 public class AuditLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "SEQ")
+    private Integer id;
 
-    @Column(name = "Entidade", nullable = false, length = 40)
-    private String entity;
+    @Column(name = "Tabela_alterada", nullable = false, length = 30)
+    private String table;
 
-    @Column(name = "Entidade_id", length = 40)
-    private String entityId;
+    @Column(name = "Campo_alterado", nullable = false, length = 20)
+    private String field;
 
-    @Column(name = "Acao", nullable = false, length = 20)
-    private String action;
+    @Column(name = "Valor_anterior", nullable = false, length = 100)
+    private String oldValue;
 
-    @Column(name = "Resumo", nullable = false, length = 500)
-    private String summary;
+    @Column(name = "Valor_atual", nullable = false, length = 100)
+    private String newValue;
 
-    @Column(name = "Usuario", nullable = false, length = 60)
-    private String username;
+    @Column(name = "Dta_alteracao", nullable = false)
+    private Instant changedAt;
 
-    @Column(name = "Dta_evento", nullable = false)
-    private Instant createdAt = Instant.now();
+    /** Id do usuario (Funcionario) da aplicacao; nulo quando a alteracao veio de fora dela. */
+    @Column(name = "Funcionario")
+    private Integer employeeId;
+
+    /** Usuario do SGBD que executou o comando. */
+    @Column(name = "Usuario_Banco", nullable = false, length = 50)
+    private String dbUser;
 }

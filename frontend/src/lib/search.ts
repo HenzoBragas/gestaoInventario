@@ -53,6 +53,34 @@ export const movementsSearchSchema = z.object({
 });
 export type MovementsSearch = z.infer<typeof movementsSearchSchema>;
 
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().catch(undefined);
+
+export const invoicesSearchSchema = z.object({
+  q: optionalText,
+  productId: optionalId,
+  employeeId: optionalId,
+  from: isoDate,
+  to: isoDate,
+  sort: optionalText,
+  dir: direction,
+  page,
+  size,
+  /** Abre o formulario de nova nota (ex.: vindo do detalhe do produto). */
+  new: flag,
+});
+export type InvoicesSearch = z.infer<typeof invoicesSearchSchema>;
+
+export const auditSearchSchema = z.object({
+  table: optionalText,
+  employeeId: optionalId,
+  q: optionalText,
+  from: isoDate,
+  to: isoDate,
+  page,
+  size,
+});
+export type AuditSearch = z.infer<typeof auditSearchSchema>;
+
 export const entitySearchSchema = z.object({ id: optionalId, q: optionalText });
 export type EntitySearch = z.infer<typeof entitySearchSchema>;
 

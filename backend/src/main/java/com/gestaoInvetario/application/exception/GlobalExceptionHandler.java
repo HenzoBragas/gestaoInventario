@@ -1,5 +1,6 @@
 package com.gestaoInvetario.application.exception;
 
+import com.gestaoInvetario.application.service.InvoiceService;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 /** Formato unico de erro: { status, code, message, fieldErrors, timestamp }. Nunca expoe stack traces. */
 @RestControllerAdvice
@@ -60,6 +63,17 @@ public class GlobalExceptionHandler {
         log.warn("Violacao de integridade: {}", ex.getMostSpecificCause().getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(body(HttpStatus.CONFLICT, "CONFLICT", "A operação conflita com registros existentes.", Map.of()));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleTooLarge(MaxUploadSizeExceededException ex) {
+        return handleApi(InvoiceService.tooLarge());
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponse> handleMissingPart(MissingServletRequestPartException ex) {
+        return ResponseEntity.badRequest()
+                .body(body(HttpStatus.BAD_REQUEST, "FILE_EMPTY", "Selecione o arquivo.", Map.of(ex.getRequestPartName(), "Selecione o arquivo.")));
     }
 
     @ExceptionHandler(Exception.class)

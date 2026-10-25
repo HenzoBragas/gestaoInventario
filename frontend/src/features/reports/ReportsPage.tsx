@@ -82,7 +82,7 @@ export function ReportsPage() {
             ))}
           </ul>
         </nav>
-        <section className="min-w-0 rounded-xl border bg-card shadow-xs" aria-label={current.title}>
+        <section className="min-w-0 rounded-xl border glass" aria-label={current.title}>
           <header className="border-b px-5 py-4">
             <h2 className="font-semibold">{current.title}</h2>
             <p className="text-sm text-muted-foreground">{current.description}</p>

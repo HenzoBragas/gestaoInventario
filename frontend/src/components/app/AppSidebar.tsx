@@ -15,14 +15,16 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { NAV_GROUPS, SETTINGS_ITEM, type NavItem } from "@/components/app/navigation";
+import { NAV_GROUPS, SETTINGS_ITEM, visibleItems, type NavItem } from "@/components/app/navigation";
 import { useDashboard, useSettings } from "@/lib/api/hooks";
+import { useAuth } from "@/lib/auth-provider";
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { data: dashboard } = useDashboard(30);
   const { data: settings } = useSettings();
   const alerts = dashboard ? dashboard.kpis.lowStock + dashboard.kpis.outOfStock : 0;
+  const { role } = useAuth();
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -40,7 +42,7 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {group.items.map((item) => (
+                {visibleItems(group.items, role).map((item) => (
                   <NavLink
                     key={item.to}
                     item={item}

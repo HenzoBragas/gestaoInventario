@@ -12,6 +12,7 @@ import com.gestaoInvetario.application.model.StockBalance;
 import com.gestaoInvetario.application.model.StockStatus;
 import com.gestaoInvetario.application.model.Supplier;
 import com.gestaoInvetario.application.repositories.CategoryRepository;
+import com.gestaoInvetario.application.repositories.InvoiceRepository;
 import com.gestaoInvetario.application.repositories.LocationRepository;
 import com.gestaoInvetario.application.repositories.ProductRepository;
 import com.gestaoInvetario.application.repositories.StockBalanceRepository;
@@ -56,11 +57,12 @@ public class ProductService {
     private final StockBalanceRepository balances;
     private final StockMovementRepository movements;
     private final StockService stock;
-    private final AuditService audit;
+    private final InvoiceRepository invoices;
 
     public ProductService(ProductRepository repository, CategoryRepository categories, SupplierRepository suppliers,
                           LocationRepository locations, StockBalanceRepository balances,
-                          StockMovementRepository movements, StockService stock, AuditService audit) {
+                          StockMovementRepository movements, StockService stock,
+                          InvoiceRepository invoices) {
         this.repository = repository;
         this.categories = categories;
         this.suppliers = suppliers;
@@ -68,7 +70,7 @@ public class ProductService {
         this.balances = balances;
         this.movements = movements;
         this.stock = stock;
-        this.audit = audit;
+        this.invoices = invoices;
     }
 
     // ------------------------------------------------------------------ consultas
@@ -127,8 +129,6 @@ public class ProductService {
             }
             stock.registerInitialStock(saved, saved.getDefaultLocation(), initial);
         }
-        audit.record("PRODUTO", saved.getId(), "CRIACAO", "Produto " + saved.getCode() + " — " + saved.getName()
-                + " cadastrado" + (initial > 0 ? " com saldo inicial de " + initial + " " + saved.getUnit() : "") + ".");
         return get(saved.getId());
     }
 
@@ -145,7 +145,6 @@ public class ProductService {
             product.setActive(request.active());
         }
         repository.save(product);
-        audit.record("PRODUTO", id, "EDICAO", "Cadastro do produto " + product.getCode() + " atualizado.");
         return get(id);
     }
 
@@ -154,8 +153,6 @@ public class ProductService {
         Product product = find(id);
         product.setActive(active);
         repository.save(product);
-        audit.record("PRODUTO", id, active ? "REATIVACAO" : "DESATIVACAO",
-                "Produto " + product.getCode() + (active ? " reativado." : " desativado."));
         return get(id);
     }
 
@@ -170,9 +167,12 @@ public class ProductService {
             throw ApiException.conflict("PRODUCT_HAS_HISTORY",
                     "Este produto possui movimentações ou saldo. Desative-o em vez de excluir.", null);
         }
+        if (invoices.countByProduct_Id(id) > 0) {
+            throw ApiException.conflict("PRODUCT_HAS_INVOICES",
+                    "Este produto possui notas fiscais vinculadas. Desative-o em vez de excluir.", null);
+        }
         balances.findByProductId(id).forEach(balances::delete);
         repository.delete(product);
-        audit.record("PRODUTO", id, "EXCLUSAO", "Produto " + product.getCode() + " — " + product.getName() + " excluído.");
     }
 
     // ------------------------------------------------------------------ mapeamento

@@ -105,7 +105,7 @@ export function SuppliersPage() {
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
         <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar por nome, documento ou e-mail" aria-label="Buscar fornecedores" className="pl-9" />
       </div>
-      <section className="rounded-xl border bg-card shadow-xs" aria-label="Fornecedores">
+      <section className="rounded-xl border glass" aria-label="Fornecedores">
         {isError ? (
           <ErrorState error={error} onRetry={() => refetch()} />
         ) : (

@@ -30,17 +30,15 @@ public class LocationService {
     private final StockBalanceRepository balances;
     private final StockMovementRepository movements;
     private final ProductRepository products;
-    private final AuditService audit;
     private final EntityManager entityManager;
 
     public LocationService(LocationRepository repository, StockBalanceRepository balances,
-                           StockMovementRepository movements, ProductRepository products, AuditService audit,
+                           StockMovementRepository movements, ProductRepository products,
                            EntityManager entityManager) {
         this.repository = repository;
         this.balances = balances;
         this.movements = movements;
         this.products = products;
-        this.audit = audit;
         this.entityManager = entityManager;
     }
 
@@ -79,7 +77,6 @@ public class LocationService {
         Location location = new Location();
         apply(location, request, code);
         Location saved = repository.save(location);
-        audit.record("LOCALIZACAO", saved.getId(), "CRIACAO", "Localização " + code + " — " + saved.getName() + " criada.");
         return toDTO(saved, Totals.EMPTY);
     }
 
@@ -92,16 +89,13 @@ public class LocationService {
                 throw ApiException.conflict("LOCATION_CODE_TAKEN", "Já existe uma localização com o código " + code + ".", "code");
             }
         });
-        boolean wasActive = location.isActive();
-        boolean deactivating = wasActive && Boolean.FALSE.equals(request.active());
+        boolean deactivating = location.isActive() && Boolean.FALSE.equals(request.active());
         if (deactivating && balances.sumQuantityByLocation(id) != 0) {
             throw ApiException.unprocessable("LOCATION_HAS_STOCK",
                     "A localização ainda possui saldo. Transfira os itens antes de desativá-la.", "active");
         }
         apply(location, request, code);
         repository.save(location);
-        String action = wasActive == location.isActive() ? "EDICAO" : (location.isActive() ? "REATIVACAO" : "DESATIVACAO");
-        audit.record("LOCALIZACAO", id, action, "Localização " + code + " atualizada.");
         return get(id);
     }
 
@@ -114,7 +108,6 @@ public class LocationService {
                     "A localização possui histórico, saldo ou produtos vinculados. Desative-a em vez de excluir.", null);
         }
         repository.delete(location);
-        audit.record("LOCALIZACAO", id, "EXCLUSAO", "Localização " + location.getCode() + " excluída.");
     }
 
     private void apply(Location location, LocationRequest request, String code) {

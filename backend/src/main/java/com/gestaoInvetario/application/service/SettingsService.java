@@ -17,11 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class SettingsService {
 
     private final AppSettingsRepository repository;
-    private final AuditService audit;
 
-    public SettingsService(AppSettingsRepository repository, AuditService audit) {
+    public SettingsService(AppSettingsRepository repository) {
         this.repository = repository;
-        this.audit = audit;
     }
 
     @Transactional
@@ -57,7 +55,6 @@ public class SettingsService {
         settings.setDefaultMinStock(request.defaultMinStock());
         settings.setUnits(String.join(",", new LinkedHashSet<>(request.units())));
         repository.save(settings);
-        audit.record("CONFIGURACAO", settings.getId(), "EDICAO", "Configurações da organização atualizadas.");
         return toResponse(settings);
     }
 

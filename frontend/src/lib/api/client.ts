@@ -88,8 +88,9 @@ export async function request<T>(config: AxiosRequestConfig): Promise<T> {
 export async function download(url: string, params?: Record<string, unknown>) {
   const response = await http.get<Blob>(url, { params, responseType: "blob", paramsSerializer: { indexes: null } });
   const disposition = String(response.headers["content-disposition"] ?? "");
+  const encoded = /filename\*=UTF-8''([^;]+)/i.exec(disposition);
   const match = /filename="?([^";]+)"?/i.exec(disposition);
-  const filename = match?.[1] ?? "exportacao.csv";
+  const filename = encoded ? decodeURIComponent(encoded[1]) : (match?.[1] ?? "exportacao.csv");
   const href = URL.createObjectURL(response.data);
   const link = document.createElement("a");
   link.href = href;

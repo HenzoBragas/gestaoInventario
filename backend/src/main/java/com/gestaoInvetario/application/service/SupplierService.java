@@ -19,14 +19,12 @@ public class SupplierService {
 
     private final SupplierRepository repository;
     private final ProductRepository products;
-    private final AuditService audit;
     private final EntityManager entityManager;
 
-    public SupplierService(SupplierRepository repository, ProductRepository products, AuditService audit,
+    public SupplierService(SupplierRepository repository, ProductRepository products,
                            EntityManager entityManager) {
         this.repository = repository;
         this.products = products;
-        this.audit = audit;
         this.entityManager = entityManager;
     }
 
@@ -53,19 +51,15 @@ public class SupplierService {
         Supplier supplier = new Supplier();
         apply(supplier, request);
         Supplier saved = repository.save(supplier);
-        audit.record("FORNECEDOR", saved.getId(), "CRIACAO", "Fornecedor " + saved.getName() + " cadastrado.");
         return toDTO(saved, 0);
     }
 
     @Transactional
     public SupplierResponse update(Integer id, SupplierRequest request) {
         Supplier supplier = find(id);
-        ensureUniqueName(request.name(), id);
-        boolean wasActive = supplier.isActive();
+        ensureUniqueName(request.name(), id);
         apply(supplier, request);
-        repository.save(supplier);
-        String action = wasActive == supplier.isActive() ? "EDICAO" : (supplier.isActive() ? "REATIVACAO" : "DESATIVACAO");
-        audit.record("FORNECEDOR", id, action, "Fornecedor " + supplier.getName() + " atualizado.");
+        repository.save(supplier);
         return toDTO(supplier, products.countBySupplier_Id(id));
     }
 
@@ -78,7 +72,6 @@ public class SupplierService {
                     + " produto(s). Desative-o em vez de excluir.", null);
         }
         repository.delete(supplier);
-        audit.record("FORNECEDOR", id, "EXCLUSAO", "Fornecedor " + supplier.getName() + " excluído.");
     }
 
     private void ensureUniqueName(String name, Integer currentId) {

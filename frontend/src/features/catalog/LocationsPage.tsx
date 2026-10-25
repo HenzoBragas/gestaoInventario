@@ -72,7 +72,7 @@ export function LocationsPage() {
       </div>
 
       {isError ? (
-        <div className="rounded-xl border bg-card">
+        <div className="rounded-xl border glass">
           <ErrorState error={error} onRetry={() => refetch()} />
         </div>
       ) : isLoading ? (
@@ -82,7 +82,7 @@ export function LocationsPage() {
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <div className="rounded-xl border bg-card">
+        <div className="rounded-xl border glass">
           <EmptyState icon={MapPin} title={query ? "Nenhuma localização encontrada" : "Nenhuma localização cadastrada"} />
         </div>
       ) : (
@@ -91,7 +91,7 @@ export function LocationsPage() {
             const Icon = TYPE_ICON[l.type];
             const share = totalValue ? l.totalValue / totalValue : 0;
             return (
-              <li key={l.id} className={cn("group relative flex flex-col rounded-xl border bg-card p-5 shadow-xs transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-sm", !l.active && "opacity-70")}>
+              <li key={l.id} className={cn("group relative flex flex-col rounded-xl border glass glass-interactive p-5", !l.active && "opacity-70")}>
                 <div className="flex items-start justify-between gap-3">
                   <button
                     type="button"

@@ -6,12 +6,13 @@ import {
   adminApi,
   analyticsApi,
   categoriesApi,
+  invoicesApi,
   locationsApi,
   movementsApi,
   productsApi,
   suppliersApi,
 } from "@/lib/api/services";
-import type { MovementQuery, ProductQuery } from "@/lib/api/types";
+import type { AuditQuery, InvoiceQuery, MovementQuery, ProductQuery } from "@/lib/api/types";
 
 /** Chaves de cache: toda escrita de estoque/cadastro invalida o grupo "data". */
 export const keys = {
@@ -25,6 +26,8 @@ export const keys = {
   locationBalances: (id: number) => ["data", "locations", id, "balances"] as const,
   movements: (q: MovementQuery) => ["data", "movements", q] as const,
   movement: (id: number) => ["data", "movement", id] as const,
+  invoices: (q: InvoiceQuery) => ["data", "invoices", q] as const,
+  employees: ["employees"] as const,
   dashboard: (days: number) => ["data", "dashboard", days] as const,
   notifications: ["data", "notifications"] as const,
   report: (name: string, params: unknown) => ["data", "report", name, params] as const,
@@ -128,13 +131,27 @@ export function useUsers(enabled: boolean) {
   return useQuery({ queryKey: keys.users, queryFn: adminApi.users, enabled: useEnabled() && enabled });
 }
 
-export function useAudit(params: { entity?: string; q?: string; page: number }, enabled: boolean) {
+export function useAudit(params: AuditQuery, enabled: boolean) {
   return useQuery({
     queryKey: keys.audit(params),
-    queryFn: () => adminApi.audit({ ...params, size: 20 }),
+    queryFn: () => adminApi.audit(params),
     enabled: useEnabled() && enabled,
     placeholderData: keepPreviousData,
   });
+}
+
+export function useInvoices(query: InvoiceQuery, enabled = true) {
+  return useQuery({
+    queryKey: keys.invoices(query),
+    queryFn: () => invoicesApi.list(query),
+    enabled: useEnabled() && enabled,
+    placeholderData: keepPreviousData,
+  });
+}
+
+/** Funcionarios ativos (responsavel pela nota fiscal, filtro da auditoria). */
+export function useEmployees() {
+  return useQuery({ queryKey: keys.employees, queryFn: adminApi.employees, enabled: useEnabled(), staleTime: 5 * 60_000 });
 }
 
 // ------------------------------------------------------------------ escrita

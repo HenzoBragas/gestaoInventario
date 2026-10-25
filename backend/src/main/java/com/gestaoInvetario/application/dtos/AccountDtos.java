@@ -23,6 +23,9 @@ public final class AccountDtos {
             boolean remember) {
     }
 
+    public record EmployeeOption(Integer id, String name, String username) {
+    }
+
     public record UserResponse(Integer id, String username, String name, String email, Role role, boolean active,
                                boolean notifyLowStock, boolean notifyOutOfStock, boolean notifyMovements,
                                Instant createdAt, Instant lastLoginAt) {

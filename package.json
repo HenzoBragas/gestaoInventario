@@ -1,0 +1,10 @@
+{
+  "name": "gestaoInventario",
+  "private": true,
+  "description": "Atalhos para rodar o frontend a partir da raiz do repositorio.",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev -- --port 3100",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint"
+  }
+}

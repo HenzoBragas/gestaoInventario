@@ -1,5 +1,6 @@
 package com.gestaoInvetario.application.service;
 
+import com.gestaoInvetario.application.dtos.AccountDtos.EmployeeOption;
 import com.gestaoInvetario.application.dtos.AccountDtos.UserRequest;
 import com.gestaoInvetario.application.dtos.AccountDtos.UserResponse;
 import com.gestaoInvetario.application.exception.ApiException;
@@ -19,12 +20,19 @@ public class UserService {
 
     private final AppUserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final AuditService audit;
 
-    public UserService(AppUserRepository repository, PasswordEncoder passwordEncoder, AuditService audit) {
+    public UserService(AppUserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
-        this.audit = audit;
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmployeeOption> options() {
+        return repository.findAll().stream()
+                .filter(AppUser::isActive)
+                .sorted(Comparator.comparing(AppUser::getName, String.CASE_INSENSITIVE_ORDER))
+                .map(u -> new EmployeeOption(u.getId(), u.getName(), u.getUsername()))
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -47,8 +55,6 @@ public class UserService {
         apply(user, request);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         AppUser saved = repository.save(user);
-        audit.record("USUARIO", saved.getId(), "CRIACAO",
-                "Usuário " + username + " criado com perfil " + saved.getRole() + ".");
         return AuthService.toResponse(saved);
     }
 
@@ -76,8 +82,6 @@ public class UserService {
             user.setPasswordHash(passwordEncoder.encode(request.password()));
         }
         repository.save(user);
-        audit.record("USUARIO", id, "EDICAO", "Usuário " + username + " atualizado (perfil " + user.getRole()
-                + (user.isActive() ? ", ativo" : ", inativo") + ").");
         return AuthService.toResponse(user);
     }
 
