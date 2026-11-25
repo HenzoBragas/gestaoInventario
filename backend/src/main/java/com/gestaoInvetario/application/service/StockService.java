@@ -5,6 +5,7 @@ import com.gestaoInvetario.application.dtos.MovementDtos.MovementResponse;
 import com.gestaoInvetario.application.dtos.PageResponse;
 import com.gestaoInvetario.application.exception.ApiException;
 import com.gestaoInvetario.application.model.Location;
+import com.gestaoInvetario.application.model.Marketplace;
 import com.gestaoInvetario.application.model.MovementType;
 import com.gestaoInvetario.application.model.Product;
 import com.gestaoInvetario.application.model.Role;
@@ -19,7 +20,10 @@ import com.gestaoInvetario.application.security.CurrentUser;
 import jakarta.persistence.criteria.JoinType;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -126,6 +130,64 @@ public class StockService {
         product.setStock(quantity);
         products.save(product);
         movements.save(movement);
+    }
+
+    /**
+     * Baixa de uma venda feita em marketplace. Roda no worker, sem usuario logado: o autor registrado
+     * e a propria integracao. Produtos sao bloqueados em ordem de id (evita deadlock entre pedidos
+     * concorrentes) e a quantidade sai primeiro da localizacao padrao do produto, depois das que tem
+     * mais saldo. Tudo ou nada: se faltar saldo de um item, nenhum item do pedido e baixado.
+     */
+    @Transactional
+    public List<StockMovement> registerMarketplaceSale(Marketplace marketplace, String orderId,
+                                                       Map<Integer, Integer> quantityByProduct) {
+        List<StockMovement> created = new ArrayList<>();
+        Instant now = Instant.now();
+        for (Map.Entry<Integer, Integer> entry : new TreeMap<>(quantityByProduct).entrySet()) {
+            Product product = products.findByIdForUpdate(entry.getKey())
+                    .orElseThrow(() -> ApiException.notFound("Produto"));
+            int remaining = entry.getValue();
+            List<StockBalance> sources = saleSources(product);
+            int available = sources.stream().mapToInt(StockBalance::getQuantity).sum();
+            if (available < remaining) {
+                throw ApiException.unprocessable("INSUFFICIENT_STOCK", "Saldo insuficiente de " + product.getCode()
+                        + ": disponível " + available + ", vendido " + remaining + ".");
+            }
+            for (StockBalance source : sources) {
+                if (remaining == 0) {
+                    break;
+                }
+                int take = Math.min(remaining, source.getQuantity());
+                StockMovement movement = new StockMovement();
+                movement.setType(MovementType.OUT);
+                movement.setProduct(product);
+                movement.setReason("Venda " + marketplace.label());
+                movement.setReference(marketplace.label() + " #" + orderId);
+                movement.setRequestKey(marketplace.code() + ":" + orderId + ":" + product.getId() + ":"
+                        + source.getLocation().getId());
+                movement.setUsername("integracao." + marketplace.name().toLowerCase());
+                movement.setUserDisplayName("Integração " + marketplace.label());
+                applyOut(movement, product, take, source.getLocation());
+                int totalBefore = product.stockOrZero();
+                product.setStock(totalBefore - take);
+                movement.setTotalBefore(totalBefore);
+                movement.setTotalAfter(product.getStock());
+                movement.setCreatedAt(now);
+                created.add(movements.save(movement));
+                remaining -= take;
+            }
+            products.save(product);
+        }
+        return created;
+    }
+
+    private List<StockBalance> saleSources(Product product) {
+        Integer preferred = product.getDefaultLocation() == null ? null : product.getDefaultLocation().getId();
+        return balances.findByProductId(product.getId()).stream()
+                .filter(b -> b.getQuantity() > 0 && b.getLocation().isActive())
+                .sorted(Comparator.comparing((StockBalance b) -> !b.getLocation().getId().equals(preferred))
+                        .thenComparing(StockBalance::getQuantity, Comparator.reverseOrder()))
+                .toList();
     }
 
     private void applyIn(StockMovement movement, Product product, int quantity, Location to) {

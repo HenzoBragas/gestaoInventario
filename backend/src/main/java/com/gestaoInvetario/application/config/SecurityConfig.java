@@ -44,6 +44,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/health").permitAll()
+                        // Chamados pelos marketplaces: Shopee validada por assinatura HMAC; no Mercado Livre
+                        // a notificacao so traz o id e o pedido e sempre relido na API autenticada.
+                        .requestMatchers(HttpMethod.POST, "/integrations/webhooks/**").permitAll()
+                        .requestMatchers("/integrations/**").hasAnyRole("MANAGER", "ADMIN")
                         .requestMatchers("/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/settings").hasRole("ADMIN")
                         .requestMatchers("/audit/**").hasAnyRole("MANAGER", "ADMIN")

@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
 
     boolean existsByCodeIgnoreCase(String code);
 
+    Optional<Product> findFirstByCodeIgnoreCase(String code);
+
     boolean existsByCodeIgnoreCaseAndIdNot(String code, Integer id);
 
     long countByCategory_Seq(Integer categorySeq);
