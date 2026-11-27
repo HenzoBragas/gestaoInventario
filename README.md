@@ -25,7 +25,7 @@ O projeto centraliza as principais operações da área de inventário em uma pl
 
 ### Ambiente de demonstração
 
-- URL: https://gestao-inventario-frontend.onrender.com/
+- URL: https://gestao-inventario-dsmachado.netlify.app/
 - Usuário: `inventario`
 - Senha: `inventario123`
 
